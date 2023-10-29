@@ -3,10 +3,20 @@
 {% block content %}
 <!-- All html must be between these two lines to ensure bootstrap is picked up correctly -->
 <div class="row w-100 m-0 p-0">
-  <div class="col-md-3" style="background-color: red"></div>
+  <div class="col-md-3 p-2" style="background-color: red">
+  <div style="border-radius: 8%; width: 100%; background-color: white" class="d-flex justify-content-center flex-column align-items-center py-5 gap-3">
+    <img style="border-radius: 50%; width:100px; height:100px" src="{% static 'src/default_avatar.png' %}">
+    <h3>John Doe</h3>
+    <div class="d-flex justify-content-around" style="width:75%">
+      <p style="text-align: center">1287<br>Posts</p>
+      <p style="text-align: center">1288<br>Followers</p>
+      <p style="text-align: center">1289<br>Following</p>
+    </div>
+  </div>
+  </div>
   <div class="col-md-6" style="background-color: green">
     <div class="card" style="margin-bottom: 1rem;">
-      <img src="{% static 'src/default_image.PNG' %}" class="card-img-top" alt="Post image here">
+      <img src="{% static 'src/default_post_image.png' %}" class="card-img-top" alt="Post image here">
       <div class="card-body">
         <h5 class="card-title">Date of Post</h5>
         <p class="card-text">Post Likes</p>
@@ -14,7 +24,7 @@
       </div>
     </div>
     <div class="card" style="margin-bottom: 1rem;">
-      <img src="{% static 'src/default_image.PNG' %}" class="card-img-top" alt="Post image here">
+      <img src="{% static 'src/default_post_image.png' %}" class="card-img-top" alt="Post image here">
       <div class="card-body">
         <h5 class="card-title">Date of Post</h5>
         <p class="card-text">Post Likes</p>
@@ -22,7 +32,7 @@
       </div>
     </div>
     <div class="card" style="margin-bottom: 1rem;">
-      <img src="{% static 'src/default_image.PNG' %}" class="card-img-top" alt="Post image here">
+      <img src="{% static 'src/default_post_image.png' %}" class="card-img-top" alt="Post image here">
       <div class="card-body">
         <h5 class="card-title">Date of Post</h5>
         <p class="card-text">Post Likes</p>
