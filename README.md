@@ -3,5 +3,6 @@
 Akshat Ghiya  
 Riley Daughton  
 Nachiket Kamod  
-Tony Rodriguez
-Yulia Gutierrez
+Tony Rodriguez  
+Yulia Gutierrez  
+Rohit Menon
