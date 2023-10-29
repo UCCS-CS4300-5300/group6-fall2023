@@ -37,7 +37,7 @@ X_FRAME_OPTIONS = '*'
 # Application definition
 
 INSTALLED_APPS = [
-    'popularity_assessor.apps.PopularityAssessorConfig'
+    'popularity_assessor.apps.PopularityAssessorConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

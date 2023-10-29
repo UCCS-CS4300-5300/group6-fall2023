@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %} 
+{% block content %}
+<!-- All html must be between these two lines to ensure bootstrap is picked up correctly -->
+<div class="row w-100 m-0 p-0">
+  <div class="col-md-3" style="background-color: red"></div>
+  <div class="col-md-6" style="background-color: green">
+    <div class="card" style="margin-bottom: 1rem;">
+      <img src="{% static 'src/default_image.PNG' %}" class="card-img-top" alt="Post image here">
+      <div class="card-body">
+        <h5 class="card-title">Date of Post</h5>
+        <p class="card-text">Post Likes</p>
+        <a href="#" class="btn btn-primary">See Post Details</a>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom: 1rem;">
+      <img src="{% static 'src/default_image.PNG' %}" class="card-img-top" alt="Post image here">
+      <div class="card-body">
+        <h5 class="card-title">Date of Post</h5>
+        <p class="card-text">Post Likes</p>
+        <a href="#" class="btn btn-primary">See Post Details</a>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom: 1rem;">
+      <img src="{% static 'src/default_image.PNG' %}" class="card-img-top" alt="Post image here">
+      <div class="card-body">
+        <h5 class="card-title">Date of Post</h5>
+        <p class="card-text">Post Likes</p>
+        <a href="#" class="btn btn-primary">See Post Details</a>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="col-md-3" style="background-color: blue"></div>
+</div>
+{% endblock content %}
+<!-- if you want to load a static file, place it in the "static" folder (this will be images, css, javascript): {% load static %} -->
