@@ -1,18 +1,19 @@
 {% extends "base.html" %}
-{% load static %} 
+{% load static %}
 {% block content %}
 <!-- All html must be between these two lines to ensure bootstrap is picked up correctly -->
 <div class="row w-100 m-0 p-0">
-  <div class="col-md-3 p-2" style="background-color: red">
-  <div style="border-radius: 8%; width: 100%; background-color: white" class="d-flex justify-content-center flex-column align-items-center py-5 gap-3">
-    <img style="border-radius: 50%; width:100px; height:100px" src="{% static 'src/default_avatar.png' %}">
-    <h3>John Doe</h3>
-    <div class="d-flex justify-content-around" style="width:75%">
-      <p style="text-align: center">1287<br>Posts</p>
-      <p style="text-align: center">1288<br>Followers</p>
-      <p style="text-align: center">1289<br>Following</p>
+  <div class="col-md-3" style="background-color: red">
+    <div style="border-radius: 8%; width: 100%; background-color: white"
+      class="d-flex justify-content-center flex-column align-items-center py-5 gap-3">
+      <img style="border-radius: 50%; width:100px; height:100px" src="{% static 'src/default_avatar.png' %}">
+      <h3>John Doe</h3>
+      <div class="d-flex justify-content-around" style="width:75%">
+        <p style="text-align: center">1287<br>Posts</p>
+        <p style="text-align: center">1288<br>Followers</p>
+        <p style="text-align: center">1289<br>Following</p>
+      </div>
     </div>
-  </div>
   </div>
   <div class="col-md-6" style="background-color: green">
     <div class="card" style="margin-bottom: 1rem;">
@@ -39,9 +40,20 @@
         <a href="#" class="btn btn-primary">See Post Details</a>
       </div>
     </div>
+  </div>
+  <div class="col-md-3" style="background-color: blue;">
+    <div style="border-radius: 8%; width: 100%; background-color: white"
+      class="d-flex flex-row align-items-center py-5 justify-content-around">
+        <div>
+          <h4>Likes</h4>
+          <div class="">
+            <h4>100 <span style="color: #00FF00;">▲</span></h4>
+            <p style="color: #848484;">90 on 9/30</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="col-md-3" style="background-color: blue"></div>
 </div>
 {% endblock content %}
 <!-- if you want to load a static file, place it in the "static" folder (this will be images, css, javascript): {% load static %} -->
