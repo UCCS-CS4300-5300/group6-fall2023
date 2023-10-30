@@ -1,4 +1,8 @@
 body {
-  background: rgba(0, 188, 227, .3) !important;
+  background: rgb(252, 252, 245) !important;
 }
-*{margin: 0; padding: 0;}
+
+* {
+  margin: 0;
+  padding: 0;
+}
