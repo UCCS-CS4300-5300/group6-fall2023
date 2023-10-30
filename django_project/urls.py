@@ -14,9 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, reverse
+from django.http import HttpResponsePermanentRedirect
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('popularity_assessor/', include('popularity_assessor.urls')),
+    path("admin/", admin.site.urls),
+    path("popularity_assessor/", include("popularity_assessor.urls")),
+    
+    # HttpResponsePermanentRedirect will notify client to redirect to our popularity_assessor/profile/<use_name> path,
+    path(
+        "",
+        lambda request: HttpResponsePermanentRedirect(
+            reverse("popularity_assessor:profile", kwargs={"user_name": "1"})
+        ),
+    ),
 ]
