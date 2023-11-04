@@ -12,7 +12,7 @@ def register(request):
       if form.is_valid():
           form.save()
           # Optionally, you can log the user in after registration here
-          return redirect('login')  # Redirect to login page or some other page
+          return redirect('popularity_assessor:login')  # Redirect to login page or some other page
   # Handle the GET request (displaying the form)
   else:
       form = UserCreationForm()
