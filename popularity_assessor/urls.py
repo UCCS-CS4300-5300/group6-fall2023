@@ -6,5 +6,6 @@ urlpatterns = [
     # path('', views.welcome, name='welcome'),
     # path('login/', views.login, name='login'),
     path('profile/<str:user_name>/', views.profile, name='profile'),
+    path('connect-insta/', views.connectInsta, name="connect-insta")
     # path('profile/<str:user_name>/post/<int:post_id>', views.post, name='post')
 ]

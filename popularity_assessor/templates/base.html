@@ -16,6 +16,10 @@
 
     <title>Some Title</title>
 
+    <!-- Note: Keep csrf-utility.js at the top of all other js imports -->
+    <script src="{% static 'js/csrf-utility.js' %}"></script>
+    <script src="{% static 'js/profile.js' %}"></script>
+
     <link href="{% static 'css/global.css' %}" rel="stylesheet">
     <link href="{% static 'css/navigation.css' %}" rel="stylesheet">
     <link href="{% static 'css/profile.css' %}" rel="stylesheet">
