@@ -12,6 +12,15 @@
                     <form method="post">
                         {% csrf_token %}
                         
+                        <!-- Display non-field errors here -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
                         {% for field in form %}
                         <div class="form-group">
                             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -24,9 +33,10 @@
                         </div>
                         {% endfor %}
                         
-                        <button type="submit" class="btn btn-primary">Login</button>
+                        <!-- Added mt-3 here for spacing -->
+                        <button type="submit" class="btn btn-primary mt-3">Login</button>
                     </form>
-                    <p class="mt-3">Don't have an account? <a href="{% url 'popularity_assessor:register' %}" class="btn btn-secondary">Register</a></p>
+                    <p class="mt-2">Don't have an account? <a href="{% url 'popularity_assessor:register' %}">Register</a></p>
                 </div>
             </div>
         </div>
