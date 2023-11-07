@@ -4,22 +4,20 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 
 
-def delete_account(user_name=None):
-    pass
+def delete_account(user=None):
+    if user is not None:
+        user.delete()
 
 
-    # Create your views here.
+        # Create your views here.
 @login_required
 def profile(request, user_name):
     # For now, the only POST request is used to delete account.
     # In the future, this must be checked further to very what the user want. (ex: delete vs. manage metrics
     if request.method == "POST":
-        delete_account()
-        return render(
-            request, "profile.html", {
-                "count": [1, 2, 3],
-                "confirm_delete_request": "Account deletion request received."
-            })
+        user_to_delete = request.user
+        delete_account(user_to_delete)
+        return redirect('popularity_assessor:login')
     return render(request, 'profile.html', {"count": [1, 2, 3]})
 
 
