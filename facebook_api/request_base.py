@@ -1,6 +1,6 @@
-from facebook_settings import facebook_Config
-from extensions.error import RequestError
-from utils.constants import BASE_URL
+from .facebook_settings import facebook_Config
+from .extensions.error import RequestError
+from .utils.constants import BASE_URL
 import requests
 
 

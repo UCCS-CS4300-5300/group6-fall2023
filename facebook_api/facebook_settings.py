@@ -1,4 +1,4 @@
-from utils.constants import facebook_versions
+from .utils.constants import facebook_versions
 
 
 class facebook_Config:

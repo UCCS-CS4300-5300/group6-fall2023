@@ -1,7 +1,7 @@
-from request_base import request_base
-from facebook_settings import facebook_Config
-from utils.constants import BASE_URL
-from extensions.general.extension import general
+from .request_base import request_base
+from .facebook_settings import facebook_Config
+from .utils.constants import BASE_URL
+from .extensions.general.extension import general
 
 class facebook_API(request_base):
     '''
