@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import JsonResponse
 
 
@@ -10,9 +11,21 @@ def connectInsta(request):
     return JsonResponse({"status": "success"})
 
 
-# Create your views here.
+def delete_account(user=None):
+    if user is not None:
+        user.delete()
+    else:
+        raise User.DoesNotExist
+
+
 @login_required
 def profile(request, user_name):
+    # For now, the only POST request is used to delete account.
+    # In the future, this must be checked further to very what the user want. (ex: delete vs. manage metrics
+    if request.method == "POST":
+        user_to_delete = request.user
+        delete_account(user_to_delete)
+        return redirect('popularity_assessor:login')
     return render(request, 'profile.html', {"count": [1, 2, 3]})
 
 
