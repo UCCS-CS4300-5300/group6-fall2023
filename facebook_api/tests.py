@@ -79,7 +79,8 @@ class facebook_APITest(TestCase):
         resp = self.facebook_api.get("test")
         self.assertIsInstance(resp, RequestError)
         self.assertEqual(resp.error.type, "OAuthException")
-    
+
+
 
 
 

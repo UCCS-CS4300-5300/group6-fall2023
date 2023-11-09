@@ -156,6 +156,13 @@ curl -i -X GET \
 ##### ouput
 - this will get our id `"id": "17841459177727833"`(inner most) to be used in future request since this is our ID for the page
 
+### insights stuff
+- first thing we need to do get our page ID from our account
+- then we need to go to `{ID}/?fields=access_token`
+- this will give us our access token that we can now use to view insights
+[here]("https://stackoverflow.com/questions/48707646/facebook-graph-api-190-this-method-must-be-called-with-a-page-access-token")
+- TODO: figure out where to store the page access token since it gives an oATUH error atm
+
 ### inisghts and other information
 #### IMPORTANT
 - to get insights information, we need to add another permission `instagram_manage_insights`
