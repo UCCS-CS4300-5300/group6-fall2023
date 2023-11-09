@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">Login</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Display non-field errors here -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" class="form-control {% if field.errors %}is-invalid{% endif %}" id="{{ field.id_for_label }}" required>
+                            {% for error in field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+
+                        <!-- Added mt-3 here for spacing -->
+                        <button type="submit" class="btn btn-primary mt-3">Login</button>
+                    </form>
+                    <p class="mt-2">Don't have an account? <a href="{% url 'popularity_assessor:register' %}">Register</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

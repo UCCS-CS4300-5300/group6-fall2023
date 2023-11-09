@@ -16,6 +16,10 @@
 
     <title>Some Title</title>
 
+    <!-- Note: Keep csrf-utility.js at the top of all other js imports -->
+    <script src="{% static 'js/csrf-utility.js' %}"></script>
+    <script src="{% static 'js/profile.js' %}"></script>
+
     <link href="{% static 'css/global.css' %}" rel="stylesheet">
     <link href="{% static 'css/navigation.css' %}" rel="stylesheet">
     <link href="{% static 'css/profile.css' %}" rel="stylesheet">
@@ -26,17 +30,19 @@
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="w-100 px-5">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="#">Logout</a>
-        </li>
-      </ul>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'popularity_assessor:logout' %}">Logout</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-      </div>
   </nav>
 
     {% block content %}{% endblock %}

@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
-
 if SECRET_KEY is None:
     print(
         "Please setup a SECRET_KEY in the Secrets (Environment variables) tab. See README.md for more."
     )
     exit(1)
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -125,6 +125,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOGIN_URL = 'popularity_assessor:login'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
