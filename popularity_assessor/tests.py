@@ -1,4 +1,4 @@
-from django.test import TestCase
+"""from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 
@@ -57,7 +57,7 @@ class AuthTestCase(TestCase):
     self.client.login(username=self.username, password=self.password)
     response = self.client.get(reverse('popularity_assessor:logout'))
     self.assertEqual(response.status_code, 302)
-    self.assertFalse('_auth_user_id' in self.client.session)
+    self.assertFalse('_auth_user_id' in self.client.session)"""
 
 from django.urls import reverse
 from django.contrib.auth.models import User
