@@ -58,3 +58,64 @@ class AuthTestCase(TestCase):
     response = self.client.get(reverse('popularity_assessor:logout'))
     self.assertEqual(response.status_code, 302)
     self.assertFalse('_auth_user_id' in self.client.session)
+
+from django.urls import reverse
+from django.contrib.auth.models import User
+from django.test import TestCase, Client
+
+class UserAccountTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.username = 'testuser'
+        self.password = 'testpassword123'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+
+    def test_register_view(self):
+        response = self.client.get(reverse('popularity_assessor:register'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'register.html')
+
+        response = self.client.post(reverse('popularity_assessor:register'), {
+            'username': 'newuser',
+            'password1': 'newpassword123',
+            'password2': 'newpassword123'
+        })
+        self.assertEqual(User.objects.count(), 2)
+        self.assertRedirects(response, reverse('popularity_assessor:profile', kwargs={'user_name': 'newuser'}))
+
+    def test_login_view(self):
+        response = self.client.get(reverse('popularity_assessor:login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'login.html')
+
+        response = self.client.post(reverse('popularity_assessor:login'), {
+            'username': self.username,
+            'password': self.password
+        })
+        self.assertRedirects(response, reverse('popularity_assessor:profile', kwargs={'user_name': self.username}))
+
+    def test_profile_view(self):
+        # Trying to access the profile page without logging in should redirect to the login page
+        response = self.client.get(reverse('popularity_assessor:profile', kwargs={'user_name': self.username}))
+        self.assertRedirects(response, f"{reverse('popularity_assessor:login')}?next={reverse('popularity_assessor:profile', kwargs={'user_name': self.username})}")
+
+        # Log in the user
+        self.client.login(username=self.username, password=self.password)
+
+        # Now the profile page should be accessible
+        response = self.client.get(reverse('popularity_assessor:profile', kwargs={'user_name': self.username}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'profile.html')
+
+    def test_logout_view(self):
+        # Log in the user
+        self.client.login(username=self.username, password=self.password)
+
+        # Log out
+        response = self.client.get(reverse('popularity_assessor:logout'))
+        self.assertRedirects(response, reverse('popularity_assessor:login'))
+
+        # After logout, the profile page should not be accessible
+        response = self.client.get(reverse('popularity_assessor:profile', kwargs={'user_name': self.username}))
+        self.assertNotEqual(response.status_code, 200)
+
