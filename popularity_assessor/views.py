@@ -2,14 +2,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
 def delete_account(user=None):
     if user is not None:
         user.delete()
+    else:
+        raise User.DoesNotExist
 
 
-        # Create your views here.
 @login_required
 def profile(request, user_name):
     # For now, the only POST request is used to delete account.
