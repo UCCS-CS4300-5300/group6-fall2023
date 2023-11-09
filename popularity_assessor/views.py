@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from .helpers import get_password_validators_help_texts
 
 
 def connectInsta(request):
@@ -44,7 +45,8 @@ def register(request):
     else:
         form = UserCreationForm()
 
-    context = {'form': form}
+    password_help_texts = get_password_validators_help_texts()
+    context = {'form': form, 'password_help_texts': password_help_texts}
     return render(request, 'register.html', context)
 
 
