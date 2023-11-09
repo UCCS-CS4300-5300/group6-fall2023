@@ -7,15 +7,23 @@ from bs4 import BeautifulSoup
 from chromedriver_py import binary_path
 
 
+class ConnectInstagramTests(TestCase):
+    def test_connection_insta_correct(self):
+        data = {"token": 'test'}
+        response = self.client.post('/popularity_assessor/connect-insta/',
+                                    data,
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'status': 'success'})
+
+
 class ProfileViewDeleteAccountTests(LiveServerTestCase):
     def setUp(self):
-        svc = webdriver.ChromeService(executable_path=binary_path)
-        self.driver = webdriver.Chrome(service=svc)
         User.objects.create_user(username='test', password='test_pass')
-        self.creds = creds = {'username': 'test', 'password': 'test_pass'}
+        self.creds = {'username': 'test', 'password': 'test_pass'}
 
     def tearDown(self):
-        self.driver.quit()
+        pass
 
     def test_delete_account_button_on_profile_page(self):
 
@@ -25,29 +33,22 @@ class ProfileViewDeleteAccountTests(LiveServerTestCase):
             reverse('popularity_assessor:profile',
                     args=(self.creds['username'], )))
 
-        # html = BeautifulSoup(response.content)
-        # print(html.prettify())
-
         self.assertContains(response, 'Delete Account')
 
-    def test_push_delete_to_see_deletion_confirmation_modal(self):
-        self.driver.get('http://0.0.0.0:3000/popularity_assessor/profile/test')
+    def test_delete_account_request(self):
 
-        delete_button = self.driver.find_element_by_xpath(
-            '/html/body/div[1]/div[1]/div[2]/button')
+        self.client.login(**self.creds)
 
-        delete_button.click()
+        response = self.client.post(reverse('popularity_assessor:profile',
+                                            args=(self.creds['username'], )),
+                                    follow=True)
 
-        response = self.client.get(
-            reverse('popularity_assessor:profile',
-                    args=(self.creds['username'], )))
+        self.assertEqual(response.status_code, 200)
 
-        html = BeautifulSoup(response.content)
-        print(html.prettify())
+        response = self.client.login(**self.creds)
+        self.assertEqual(response, False)
 
 
-x = '''
-# Create your tests here.
 class UserAccountTests(TestCase):
     def setUp(self):
         self.username = 'testuser'
@@ -156,4 +157,3 @@ class delete_account_test(TestCase):
         # Try retrieving user from databases, should raise User.DoesNotExist exception
         with self.assertRaises(User.DoesNotExist):
             user = User.objects.get(username='testuser')
-'''

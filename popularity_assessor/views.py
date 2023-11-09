@@ -7,7 +7,6 @@ from django.http import JsonResponse
 
 
 def connectInsta(request):
-    print(request.body)
     return JsonResponse({"status": "success"})
 
 
