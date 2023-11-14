@@ -11,6 +11,19 @@ def connectInsta(request):
     return JsonResponse({"status": "success"})
 
 
+# This function will be used to get all of the user's posts and post metadata
+def get_posts(self):
+    posts = [{
+        'img_path': 'src/post_sample_1.jpg'
+    }, {
+        'img_path': 'src/post_sample_2.jpg'
+    }, {
+        'img_path': 'src/post_sample_3.jpg'
+    }]
+
+    return posts
+
+
 def delete_account(user=None):
     if user is not None:
         user.delete()
@@ -26,7 +39,9 @@ def profile(request, user_name):
         user_to_delete = request.user
         delete_account(user_to_delete)
         return redirect('popularity_assessor:login')
-    return render(request, 'profile.html', {"count": [1, 2, 3]})
+
+    posts = get_posts(None)
+    return render(request, 'profile.html', {'posts': posts})
 
 
 def register(request):
