@@ -84,20 +84,5 @@
 </div>
 </div>
 
-<!-- TODO: (RM1) Remove this in next iteration, once we implement the instagram account joining functionality -->
-<!--Temporary Pop up to submit Instagram Token For user-->
-<div id="token-pop-up" class="token-pop-up-overlay d-flex justify-content-center align-items-center">
-  <div class="bg-light p-3 rounded shadow border">
-    <h3>Instagram Token</h3>
-    <div class="d-flex flex-column gap-2">
-      {% csrf_token %}
-      <div class="form-group">
-        <input type="password" id="insta-token" name="insta_token" placeholder="Instagram Token">
-      </div>
-      <button class="btn btn-primary" onclick="submitInstaToken()">Submit</button>
-    </div>
-  </div>
-</div>
-
 {% endblock content %}
 <!-- if you want to load a static file, place it in the "static" folder (this will be images, css, javascript): {% load static %} -->

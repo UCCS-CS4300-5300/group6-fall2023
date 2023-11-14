@@ -11,8 +11,6 @@ from facebook_api.helpers.get_accessToken import get_accessToken
 
 def connectInsta(request):
     code = request.GET.get('code')
-
-    # TODO: Handle this code to get access token from facebook and push it to our table
     user_auth = get_accessToken(code, request.get_host() + request.path)
     
     # create a new instagram account in the DB
