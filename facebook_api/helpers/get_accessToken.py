@@ -9,8 +9,10 @@ def get_accessToken(code: str, redirect_url: str) -> UserAuth:
     client_id = "1709283336164932"
     client_secret = "a91ae8bdde78bbed89a013417435a9b7"
 
+    print("http://" + redirect_url)
+
     url = "https://graph.facebook.com/v18.0/oauth/access_token"
-    params = {code, client_id, redirect_url, client_secret}
+    params = {"code": code, "client_id": client_id, "redirect_uri": "http://" + redirect_url, "client_secret": client_secret}
     resp = requests.get(url, params=params)
 
     # if we have an error, return the error

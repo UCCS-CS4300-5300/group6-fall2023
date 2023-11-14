@@ -14,8 +14,10 @@ def connectInsta(request):
     print(code)
 
     # TODO: Handle this code to get access token from facebook and push it to our table
-    test = get_access_token(code, request.get_host() + request.path)
-    print(test)
+    user_auth = get_accessToken(code, request.get_host() + request.path)
+    
+    
+
     return JsonResponse({"status": "success"})
 
 
