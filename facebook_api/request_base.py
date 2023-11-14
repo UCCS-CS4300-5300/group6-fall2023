@@ -19,7 +19,7 @@ class request_base:
     def get(self,
             endpoint: str,
             params: dict = {},
-            object_return_type: object = None):
+            object_return_type: object = None, no_token: bool = False):
         '''
         our get request method to help handle the requests
         this will send a get request to the url with the params added on the end
@@ -38,7 +38,11 @@ class request_base:
 
         # combine our temp params with the required params and send the response
         # ** unpacks the dict to combine them
-        temp_params: dict = {**self.required_params, **params}
+        temp_params = {}
+        if no_token == False:
+            temp_params: dict = {**self.required_params, **params}
+        else:
+            temp_params: dict = params
         resp = requests.get(url, params=temp_params)
 
         # if we have an error, return the error

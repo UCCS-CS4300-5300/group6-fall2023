@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
-
+from facebook_api.helpers.get_accessToken import get_accessToken
 
 def connectInsta(request):
     code = request.GET.get('code')
@@ -14,7 +14,8 @@ def connectInsta(request):
     print(code)
 
     # TODO: Handle this code to get access token from facebook and push it to our table
-
+    test = get_access_token(code, request.get_host() + request.path)
+    print(test)
     return JsonResponse({"status": "success"})
 
 
