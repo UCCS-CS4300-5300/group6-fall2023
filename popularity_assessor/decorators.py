@@ -20,11 +20,9 @@ def facebook_auth_check(view_func):
             # Check if the user's account is connected with an Instagram account
             IGAcc = InstagramAccount.objects.get(pk=user.id)
 
-            request.body.api = facebook_API(IGAcc.token, facebook_Config())
-
+            request.api = facebook_API(IGAcc.token, facebook_Config())
 
             # TODO: Implement access code expiration check
-            # TODO: Add access code to request body for use in view
 
         except InstagramAccount.DoesNotExist:
             # Generate a random number for CSRF protection
