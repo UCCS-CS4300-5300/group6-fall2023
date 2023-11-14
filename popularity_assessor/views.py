@@ -5,9 +5,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .helpers import get_password_validators_help_texts
+from .decorators import facebook_auth_check
 
 
 def connectInsta(request):
+    code = request.GET.get('code')
+
+    print(code)
+
+    # TODO: Handle this code to get access token from facebook and push it to our table
+
     return JsonResponse({"status": "success"})
 
 
@@ -19,6 +26,7 @@ def delete_account(user=None):
 
 
 @login_required
+@facebook_auth_check
 def profile(request, user_name):
     # For now, the only POST request is used to delete account.
     # In the future, this must be checked further to very what the user want. (ex: delete vs. manage metrics
