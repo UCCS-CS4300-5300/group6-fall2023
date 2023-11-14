@@ -14,11 +14,24 @@ def connectInsta(request):
 # This function will be used to get all of the user's posts and post metadata
 def get_posts(self):
     posts = [{
-        'img_path': 'src/post_sample_1.jpg'
+        'title': 'Beach Rocks',
+        'img_path': 'src/post_sample_1.jpg',
+        'num_comments': 4,
+        'date': 'September 9, 2023',
+        'likes': 30,
+        
     }, {
-        'img_path': 'src/post_sample_2.jpg'
+        'title': 'New Beginning',
+        'img_path': 'src/post_sample_2.jpg',
+        'num_comments': 9,
+        'date': 'November 6, 2021',
+        'likes': 50,
     }, {
-        'img_path': 'src/post_sample_3.jpg'
+        'title': 'Snowy Owl',
+        'img_path': 'src/post_sample_3.jpg',
+        'num_comments': 10,
+        'date': 'November 11, 2022',
+        'likes': 60,
     }]
 
     return posts
