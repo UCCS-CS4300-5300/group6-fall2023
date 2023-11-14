@@ -1,13 +1,14 @@
 from ..extensions.authentication.userAuth import UserAuth
 from ..extensions.error import RequestError
 import requests
+import os
 
 
 def get_accessToken(code: str, redirect_url: str) -> UserAuth:
 
 
-    client_id = "1709283336164932"
-    client_secret = "a91ae8bdde78bbed89a013417435a9b7"
+    client_id = os.getenv("FB_CLIENT_ID")
+    client_secret = os.getenv("FB_CLIENT_SECRET")
 
     print("http://" + redirect_url)
 

@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from .models import InstagramAccount
 from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
 from facebook_api.helpers.get_accessToken import get_accessToken
@@ -16,6 +17,10 @@ def connectInsta(request):
     # TODO: Handle this code to get access token from facebook and push it to our table
     user_auth = get_accessToken(code, request.get_host() + request.path)
     
+    # create a new instagram account in the DB
+    account = InstagramAccount(user=request.user, token=user_auth.access_token)
+    account.save()
+
     
 
     return JsonResponse({"status": "success"})
@@ -31,6 +36,7 @@ def delete_account(user=None):
 @login_required
 @facebook_auth_check
 def profile(request, user_name):
+    print(request.body.api)
     # For now, the only POST request is used to delete account.
     # In the future, this must be checked further to very what the user want. (ex: delete vs. manage metrics
     if request.method == "POST":
