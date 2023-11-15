@@ -51,14 +51,16 @@
     <div class="card shadow border">
         {% with post.img_path as img_static %}
       <img src="{% static img_static %}" class="card-img-top" alt="Post image here">
+      {% endwith %}
       <div class="card-body">
-        <h5 class="card-title">Date of Post</h5>
-        <p class="card-text">Post Likes</p>
+        <h5 class="card-title">{{ post.title }}</h5>
+        <p class="card-text">Date Posted: {{ post.date }}</p>
+        <p class="card-text">Likes: {{ post.likes }}</p>
+        <p class="card-text">Comments: {{ post.num_comments }}</p>
         <a href="#" class="btn btn-primary p-2">See Post Details</a>
-          {% endwith %}
       </div>
     </div>
-    
+
     {% endfor %}
   </div>
   <div class="col-md-3">
