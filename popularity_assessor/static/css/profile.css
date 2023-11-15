@@ -1,5 +1,18 @@
 .custom-card {
-    border-radius: 10px;
     width: 100%;
-    background-color: white;
+}
+
+.custom-card > img {
+    border-radius: 50%;
+    width: 230px;
+    height: 230px;
+}
+
+.custom-card > .row > .col-sm-4 > p {
+    text-align: center;
+} 
+
+.custom-card > .row > .col-sm-4 > p > span {
+    font-weight: 500;
+    font-size: 1.5rem;
 }
