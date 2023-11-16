@@ -17,8 +17,8 @@ def connectInsta(request):
     user_auth = get_accessToken(code, request.get_host() + request.path)
 
     # create a new instagram account in the DB
-    # account = InstagramAccount(user=request.user, token=user_auth.access_token)
-    # account.save()
+    account = InstagramAccount(user=request.user, token=user_auth.access_token)
+    account.save()
 
     return redirect('popularity_assessor:profile',
                     user_name=request.user.username)
