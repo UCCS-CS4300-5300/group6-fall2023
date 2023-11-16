@@ -20,12 +20,11 @@ from django.http import HttpResponsePermanentRedirect
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("popularity_assessor/", include("popularity_assessor.urls")),
-    
-    # HttpResponsePermanentRedirect will notify client to redirect to our popularity_assessor/profile/<use_name> path,
+
+    # HttpResponsePermanentRedirect will notify client to redirect to our popularity_assessor/login path,
     path(
         "",
         lambda request: HttpResponsePermanentRedirect(
-            reverse("popularity_assessor:profile", kwargs={"user_name": "1"})
-        ),
+            reverse("popularity_assessor:login")),
     ),
 ]
