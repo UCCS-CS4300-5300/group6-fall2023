@@ -6,14 +6,16 @@ import os
 
 def get_accessToken(code: str, redirect_url: str) -> UserAuth:
 
-
     client_id = os.getenv("FB_CLIENT_ID")
     client_secret = os.getenv("FB_CLIENT_SECRET")
 
-    print("http://" + redirect_url)
-
     url = "https://graph.facebook.com/v18.0/oauth/access_token"
-    params = {"code": code, "client_id": client_id, "redirect_uri": "http://" + redirect_url, "client_secret": client_secret}
+    params = {
+        "code": code,
+        "client_id": client_id,
+        "redirect_uri": "http://" + redirect_url,
+        "client_secret": client_secret
+    }
     resp = requests.get(url, params=params)
 
     # if we have an error, return the error

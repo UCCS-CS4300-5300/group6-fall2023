@@ -8,18 +8,20 @@ from .models import InstagramAccount
 from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
 from facebook_api.helpers.get_accessToken import get_accessToken
-from datetime import datetime, timedelta # for mock data
+from datetime import datetime, timedelta  # for mock data
 import random
+
 
 def connectInsta(request):
     code = request.GET.get('code')
     user_auth = get_accessToken(code, request.get_host() + request.path)
-    
-    # create a new instagram account in the DB
-    account = InstagramAccount(user=request.user, token=user_auth.access_token)
-    account.save()
 
-    return JsonResponse({"status": "success"})
+    # create a new instagram account in the DB
+    # account = InstagramAccount(user=request.user, token=user_auth.access_token)
+    # account.save()
+
+    return redirect('popularity_assessor:profile',
+                    user_name=request.user.username)
 
 
 # This function will be used to get all of the user's posts and post metadata
@@ -53,52 +55,55 @@ def delete_account(user=None):
     else:
         raise User.DoesNotExist
 
+
 @login_required
 @facebook_auth_check
 def profile(request, user_name):
-    print(request.api)
     # For now, the only POST request is used to delete account.
     # In the future, this must be checked further to very what the user want. (ex: delete vs. manage metrics
     if request.method == "POST":
         user_to_delete = request.user
         delete_account(user_to_delete)
         return redirect('popularity_assessor:login')
-  
- # Use the new mock functions
- user_metrics = mock_user_metrics()
- posts = mock_posts()
 
- # Format the dates for today and yesterday
- # Get the current date and time
- now = datetime.now()
+    # Use the new mock functions
+    user_metrics = mock_user_metrics()
+    posts = mock_posts()
 
- # Calculate the date for yesterday
- yesterday = now - timedelta(days=2)
+    # Format the dates for today and yesterday
+    # Get the current date and time
+    now = datetime.now()
 
- # Format the date as MM/DD
- yesterday_formatted = yesterday.strftime("%m/%d")
- today_str = datetime.now().strftime("%Y-%m-%d")
- yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    # Calculate the date for yesterday
+    yesterday = now - timedelta(days=2)
 
- # Calculate likes from today and yesterday
- likes_today = sum(
-    len([like for like in post['likes'] if like['timestamp'].startswith(today_str)])
-    for post in posts
- )
- likes_yesterday = sum(
-    len([like for like in post['likes'] if 
- like['timestamp'].startswith(yesterday_str)])
-    for post in posts
- )
+    # Format the date as MM/DD
+    yesterday_formatted = yesterday.strftime("%m/%d")
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 
-# Pass data to the template
- return render(request, 'profile.html', {
-    "posts": posts, 
-    "user_metrics": user_metrics,
-    "likes_today": likes_today,
-    "likes_yesterday": likes_yesterday,
-    "yesterday_date" : yesterday_formatted
- })
+    # Calculate likes from today and yesterday
+    likes_today = sum(
+        len([
+            like for like in post['likes']
+            if like['timestamp'].startswith(today_str)
+        ]) for post in posts)
+    likes_yesterday = sum(
+        len([
+            like for like in post['likes']
+            if like['timestamp'].startswith(yesterday_str)
+        ]) for post in posts)
+
+    # Pass data to the template
+    return render(
+        request, 'profile.html', {
+            "posts": get_posts(None),
+            "user_metrics": user_metrics,
+            "likes_today": likes_today,
+            "likes_yesterday": likes_yesterday,
+            "yesterday_date": yesterday_formatted
+        })
+
 
 def register(request):
     # Handle the POST request (form submission)
@@ -135,39 +140,44 @@ def custom_login(request):
 
 
 def mock_user_metrics():
-  # Assuming all followers are from today and yesterday for simplicity
-  current_followers = 310
-  followers_yesterday = 320
-  total_posts = 100  
-  following = 207  
+    # Mocking user metrics until API is fully implemented
+    username = "John Doe"
+    current_followers = 310
+    followers_yesterday = 320
+    total_posts = 100
+    following = 207
 
-  return {
-      'total_posts': total_posts,
-      'current_followers': current_followers,
-      'followers_yesterday': followers_yesterday,
-      'following': following,
-  }
+    return {
+        'total_posts': total_posts,
+        'current_followers': current_followers,
+        'followers_yesterday': followers_yesterday,
+        'following': following,
+        'username': username,
+    }
+
 
 def mock_posts():
- posts = []
+    posts = []
 
- for i in range(1, 6):
-    post_date = datetime.now() - timedelta(days=random.randint(0, 4))
-    num_likes = random.randint(10, 100)  # Random number of likes for the post
-    likes = []
+    for i in range(1, 6):
+        post_date = datetime.now() - timedelta(days=random.randint(0, 4))
+        num_likes = random.randint(10,
+                                   100)  # Random number of likes for the post
+        likes = []
 
-    for _ in range(num_likes):
-        # Generate a random timestamp for each like between the post_date and now
-        like_timestamp = post_date + timedelta(seconds=random.randint(0, int((datetime.now() - post_date).total_seconds())))
-        likes.append({'timestamp': like_timestamp.strftime("%Y-%m-%d %H:%M:%S")})
+        for _ in range(num_likes):
+            # Generate a random timestamp for each like between the post_date and now
+            like_timestamp = post_date + timedelta(seconds=random.randint(
+                0, int((datetime.now() - post_date).total_seconds())))
+            likes.append(
+                {'timestamp': like_timestamp.strftime("%Y-%m-%d %H:%M:%S")})
 
-    posts.append({
-        'image_path': f'path/to/image{i}.jpg',
-        'title': f'Post {i}',
-        'date': post_date.strftime("%Y-%m-%d"),
-        'likes': likes,
-        'num_comments': random.randint(2, 10)
-    })
+        posts.append({
+            'image_path': f'path/to/image{i}.jpg',
+            'title': f'Post {i}',
+            'date': post_date.strftime("%Y-%m-%d"),
+            'likes': likes,
+            'num_comments': random.randint(2, 10)
+        })
 
- return posts
-
+    return posts

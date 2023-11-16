@@ -31,17 +31,19 @@ def facebook_auth_check(view_func):
             # Retrieve the Facebook client ID from the environment variable
             client_id = os.getenv("FB_CLIENT_ID")
             if client_id is None:
-                raise ValueError("Facebook client id environment variable not set")
+                raise ValueError(
+                    "Facebook client id environment variable not set")
+
+            fb_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id={client_id}&redirect_uri={request.build_absolute_uri(reverse('popularity_assessor:connect-insta'))}&response_type=code&state={RANDOM_NUMBER}"
 
             # Generate the redirect URL for Facebook authentication
-            params = {
-                "client_id": client_id,
-                "redirect_uri": request.build_absolute_uri(reverse("popularity_assessor:connect-insta")),
-                "response_type": "code",
-                "state": RANDOM_NUMBER
-            }
+            # params = {
+            #     "client_id": client_id,
+            #     "redirect_uri": request.build_absolute_uri(reverse("popularity_assessor:connect-insta")),
+            #     "response_type": "code",
+            #     "state": RANDOM_NUMBER
+            # }
 
-            fb_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?{urlencode(params)}"
             return redirect(fb_auth_url)
 
         # Continue to the original view
