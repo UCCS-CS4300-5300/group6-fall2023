@@ -1,6 +1,7 @@
 *.log
 *.pot
 *.pyc
+*.coverage
 __pycache__
 db.sqlite3
 media
@@ -10,4 +11,4 @@ env/
 venv/ 
 ENV/ 
 env.bak/ 
-venv.bak/ 
+venv.bak/
