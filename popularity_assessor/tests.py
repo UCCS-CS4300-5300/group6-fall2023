@@ -156,11 +156,11 @@ class delete_account_test(TestCase):
         with self.assertRaises(User.DoesNotExist):
             user = User.objects.get(username='testuser')
 
-<<<<<<< Updated upstream
 
 
 
-from popularity_assessor.views import get_mock_likes, generate_random_likes, get_posts, get_mock_followers, get_user_metrics
+
+"""from popularity_assessor.views import get_mock_likes, generate_random_likes, get_posts, get_mock_followers, get_user_metrics
 from datetime import datetime, timedelta
 
 class MockDataTests(TestCase):
@@ -216,8 +216,8 @@ class MockDataTests(TestCase):
         self.assertTrue(isinstance(metrics['total_following'], int))
         self.assertTrue(isinstance(metrics['total_posts'], int))
         self.assertTrue(isinstance(metrics['followers_today'], int))
-        self.assertTrue(isinstance(metrics['followers_one_day_ago'], int))
-=======
+        self.assertTrue(isinstance(metrics['followers_one_day_ago'], int))"""
+
 class MockMetricsTests(TestCase):
 
   def test_mock_user_metrics(self):
@@ -259,4 +259,4 @@ class MockPostsTests(TestCase):
           for like in post['likes']:
               self.assertIn('timestamp', like)
               self.assertIsInstance(like['timestamp'], str)
->>>>>>> Stashed changes
+
