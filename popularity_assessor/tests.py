@@ -1,11 +1,10 @@
 from django.test import TestCase, LiveServerTestCase
 from django.contrib.auth.models import User
-from popularity_assessor.views import delete_account
+from popularity_assessor.views import delete_account, mock_user_metrics, mock_posts
 from django.urls import reverse
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from chromedriver_py import binary_path
-
 
 class ConnectInstagramTests(TestCase):
     def test_connection_insta_correct(self):
@@ -15,7 +14,6 @@ class ConnectInstagramTests(TestCase):
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'status': 'success'})
-
 
 class ProfileViewDeleteAccountTests(LiveServerTestCase):
     def setUp(self):
@@ -158,6 +156,7 @@ class delete_account_test(TestCase):
         with self.assertRaises(User.DoesNotExist):
             user = User.objects.get(username='testuser')
 
+<<<<<<< Updated upstream
 
 
 
@@ -218,3 +217,46 @@ class MockDataTests(TestCase):
         self.assertTrue(isinstance(metrics['total_posts'], int))
         self.assertTrue(isinstance(metrics['followers_today'], int))
         self.assertTrue(isinstance(metrics['followers_one_day_ago'], int))
+=======
+class MockMetricsTests(TestCase):
+
+  def test_mock_user_metrics(self):
+      metrics = mock_user_metrics()
+      self.assertIn('total_posts', metrics)
+      self.assertIn('current_followers', metrics)
+      self.assertIn('followers_yesterday', metrics)
+      self.assertIn('following', metrics)
+
+      # Check the type of values
+      self.assertIsInstance(metrics['total_posts'], int)
+      self.assertIsInstance(metrics['current_followers'], int)
+      self.assertIsInstance(metrics['followers_yesterday'], int)
+      self.assertIsInstance(metrics['following'], int)
+
+class MockPostsTests(TestCase):
+
+  def test_mock_posts(self):
+      posts = mock_posts()
+
+      # Check if posts is a list
+      self.assertIsInstance(posts, list)
+
+      # Check the structure of each post
+      for post in posts:
+          self.assertIn('image_path', post)
+          self.assertIn('title', post)
+          self.assertIn('date', post)
+          self.assertIn('likes', post)
+          self.assertIn('num_comments', post)
+
+          # Check the type of each attribute
+          self.assertIsInstance(post['title'], str)
+          self.assertIsInstance(post['date'], str)
+          self.assertIsInstance(post['likes'], list)
+          self.assertIsInstance(post['num_comments'], int)
+
+          # Check the structure of each like
+          for like in post['likes']:
+              self.assertIn('timestamp', like)
+              self.assertIsInstance(like['timestamp'], str)
+>>>>>>> Stashed changes

@@ -12,10 +12,10 @@
           <p style="text-align: center">{{ user_metrics.total_posts }}<br>Posts</p>
         </div>
         <div class="col-sm-4">
-          <p style="text-align: center">{{ user_metrics.total_followers }}<br>Followers</p>
+          <p style="text-align: center">{{ user_metrics.current_followers }}<br>Followers</p>
         </div>
         <div class="col-sm-4">
-          <p style="text-align: center">{{ user_metrics.total_following }}<br>Following</p>
+          <p style="text-align: center">{{ user_metrics.following }}<br>Following</p>
         </div>
       </div>
     </div>
@@ -65,31 +65,32 @@
       <div>
         <h4>Likes</h4>
         <div class="">
-          <h4>{{ total_likes_today }}
-            {% if total_likes_today > total_likes_yesterday %}
+          <!-- Update for total likes today -->
+          <h4>{{ likes_today }}
+            <!-- Update comparison logic if necessary -->
+            {% if likes_today > likes_yesterday %}
               <span style="color: #158415;">▲</span>
-            {% elif total_likes_today < total_likes_yesterday %}
+            {% elif likes_today < likes_yesterday %}
               <span style="color: #FF0000;">▼</span>
             {% endif %}
           </h4>
-          <p style="color: #848484;">{{ total_likes_yesterday }} on {{ yesterday|date:"m/d/Y" }}</p>
+          <p style="color: #848484;">{{ likes_yesterday }} on {{ yesterday_date }}</p>
         </div>
       </div>
       <div>
         <h4>Followers</h4>
         <div class="">
-          <h4>{{ user_metrics.followers_today }}
-            {% if user_metrics.followers_today > user_metrics.followers_one_day_ago %}
+          <h4>{{ user_metrics.current_followers }}
+            {% if user_metrics.current_followers > user_metrics.followers_yesterday %}
               <span style="color: #158415;">▲</span>
-            {% elif user_metrics.followers_today < user_metrics.followers_one_day_ago %}
+            {% elif user_metrics.current_followers < user_metrics.followers_yesterday %}
               <span style="color: #FF0000;">▼</span>
             {% endif %}
           </h4>
-          <p style="color: #848484;">{{ user_metrics.followers_one_day_ago }} on {{ yesterday|date:"m/d/Y" }}</p>
+          <p style="color: #848484;">{{ user_metrics.followers_yesterday }} on {{ yesterday_date }}</p>
         </div>
       </div>
     </div>
-
     <div class="d-flex justify-content-center w-100 mt-3 ">
       <a href="#" class="btn btn-sm btn-info">Manage Metrics</a>
     </div>
