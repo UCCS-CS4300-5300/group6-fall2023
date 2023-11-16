@@ -157,3 +157,64 @@ class delete_account_test(TestCase):
         # Try retrieving user from databases, should raise User.DoesNotExist exception
         with self.assertRaises(User.DoesNotExist):
             user = User.objects.get(username='testuser')
+
+
+
+
+from popularity_assessor.views import get_mock_likes, generate_random_likes, get_posts, get_mock_followers, get_user_metrics
+from datetime import datetime, timedelta
+
+class MockDataTests(TestCase):
+    def test_get_mock_likes(self):
+        # Testing for 5 likes from 1 day ago
+        likes = get_mock_likes(5, 1)
+        self.assertEqual(len(likes), 5)
+        expected_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        for like in likes:
+            self.assertEqual(like['date'], expected_date)
+
+    def test_generate_random_likes(self):
+        # Testing the generation of random likes
+        likes = generate_random_likes()
+        self.assertTrue(10 <= len(likes) <= 130)  # Based on the random number generation logic in the function
+        today = datetime.now().strftime("%Y-%m-%d")
+        for like in likes:
+            self.assertIn('date', like)
+            self.assertTrue(like['date'] <= today)  # Ensuring the dates are not in the future
+
+    def test_get_posts(self):
+        # Testing the creation of mock posts
+        posts = get_posts()
+        self.assertEqual(len(posts), 5)
+        today = datetime.now().strftime("%Y-%m-%d")
+        for post in posts:
+            self.assertIn('image_path', post)
+            self.assertIn('title', post)
+            self.assertIn('date', post)
+            self.assertIn('likes', post)
+            self.assertIn('num_comments', post)
+            self.assertEqual(post['date'], '2021-01-0' + str(posts.index(post) + 1))
+            self.assertTrue(isinstance(post['likes_today'], int))
+            self.assertTrue(post['likes_today'] <= len(post['likes']))  # Ensuring likes_today is not more than total likes
+
+    def test_get_mock_followers(self):
+        # Testing the generation of mock followers
+        followers = get_mock_followers(10, 2)
+        self.assertEqual(len(followers), 10)
+        expected_date = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d")
+        for follower in followers:
+            self.assertEqual(follower['date'], expected_date)
+
+    def test_get_user_metrics(self):
+        # Testing the retrieval of user metrics
+        metrics = get_user_metrics()
+        self.assertIn('total_followers', metrics)
+        self.assertIn('total_following', metrics)
+        self.assertIn('total_posts', metrics)
+        self.assertIn('followers_today', metrics)
+        self.assertIn('followers_one_day_ago', metrics)
+        self.assertTrue(isinstance(metrics['total_followers'], int))
+        self.assertTrue(isinstance(metrics['total_following'], int))
+        self.assertTrue(isinstance(metrics['total_posts'], int))
+        self.assertTrue(isinstance(metrics['followers_today'], int))
+        self.assertTrue(isinstance(metrics['followers_one_day_ago'], int))
