@@ -1,0 +1,2 @@
+[run]
+omit = /home/runner/.cache/*,*/django_project/*,popularity_assessor/migrations/*,popularity_assessor/admin.py,*/__init__.py*,popularity_assessor/urls.py,*/tests.py,*/manage.py

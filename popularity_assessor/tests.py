@@ -1,11 +1,10 @@
-from django.test import TestCase, LiveServerTestCase
+from django.test import TestCase, LiveServerTestCase, Client
 from django.contrib.auth.models import User
-from popularity_assessor.views import delete_account
+from popularity_assessor.views import delete_account, get_posts, mock_user_metrics, mock_posts
 from django.urls import reverse
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from chromedriver_py import binary_path
-
 
 class ConnectInstagramTests(TestCase):
     def test_connection_insta_correct(self):
@@ -17,6 +16,29 @@ class ConnectInstagramTests(TestCase):
         self.assertEqual(response.json(), {'status': 'success'})
 
 
+# Test that all the fields appear in the profile view
+class ProfileViewGetPostTests(TestCase):
+    def setUp(self):
+      self.client = Client()
+      self.user = User.objects.create_user(username='testuser', password='testpassword')
+
+    def test_profile_view_post_expected_fields(self):
+      # Log in test user
+      self.client.login(username='testuser', password='testpassword')
+      # Retrieve user password page
+      response = self.client.get(reverse('popularity_assessor:profile', args=['testuser']))
+      # Ensure that the response is successfull
+      self.assertEqual(response.status_code, 200)
+      # Get expected post data from the get_post function
+      expected_posts = get_posts(None)
+      # Loop each post and assert that each specific field are present
+      for post_data in expected_posts:
+        self.assertContains(response, post_data['title'])
+        self.assertContains(response, post_data['date'])
+        self.assertContains(response, f'Likes: {post_data["likes"]}')
+        self.assertContains(response, f'Comments: {post_data["num_comments"]}')
+
+        
 class ProfileViewDeleteAccountTests(LiveServerTestCase):
     def setUp(self):
         User.objects.create_user(username='test', password='test_pass')
@@ -157,3 +179,108 @@ class delete_account_test(TestCase):
         # Try retrieving user from databases, should raise User.DoesNotExist exception
         with self.assertRaises(User.DoesNotExist):
             user = User.objects.get(username='testuser')
+
+
+
+
+
+"""from popularity_assessor.views import get_mock_likes, generate_random_likes, get_posts, get_mock_followers, get_user_metrics
+from datetime import datetime, timedelta
+
+class MockDataTests(TestCase):
+    def test_get_mock_likes(self):
+        # Testing for 5 likes from 1 day ago
+        likes = get_mock_likes(5, 1)
+        self.assertEqual(len(likes), 5)
+        expected_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        for like in likes:
+            self.assertEqual(like['date'], expected_date)
+
+    def test_generate_random_likes(self):
+        # Testing the generation of random likes
+        likes = generate_random_likes()
+        self.assertTrue(10 <= len(likes) <= 130)  # Based on the random number generation logic in the function
+        today = datetime.now().strftime("%Y-%m-%d")
+        for like in likes:
+            self.assertIn('date', like)
+            self.assertTrue(like['date'] <= today)  # Ensuring the dates are not in the future
+
+    def test_get_posts(self):
+        # Testing the creation of mock posts
+        posts = get_posts()
+        self.assertEqual(len(posts), 5)
+        today = datetime.now().strftime("%Y-%m-%d")
+        for post in posts:
+            self.assertIn('image_path', post)
+            self.assertIn('title', post)
+            self.assertIn('date', post)
+            self.assertIn('likes', post)
+            self.assertIn('num_comments', post)
+            self.assertEqual(post['date'], '2021-01-0' + str(posts.index(post) + 1))
+            self.assertTrue(isinstance(post['likes_today'], int))
+            self.assertTrue(post['likes_today'] <= len(post['likes']))  # Ensuring likes_today is not more than total likes
+
+    def test_get_mock_followers(self):
+        # Testing the generation of mock followers
+        followers = get_mock_followers(10, 2)
+        self.assertEqual(len(followers), 10)
+        expected_date = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d")
+        for follower in followers:
+            self.assertEqual(follower['date'], expected_date)
+
+    def test_get_user_metrics(self):
+        # Testing the retrieval of user metrics
+        metrics = get_user_metrics()
+        self.assertIn('total_followers', metrics)
+        self.assertIn('total_following', metrics)
+        self.assertIn('total_posts', metrics)
+        self.assertIn('followers_today', metrics)
+        self.assertIn('followers_one_day_ago', metrics)
+        self.assertTrue(isinstance(metrics['total_followers'], int))
+        self.assertTrue(isinstance(metrics['total_following'], int))
+        self.assertTrue(isinstance(metrics['total_posts'], int))
+        self.assertTrue(isinstance(metrics['followers_today'], int))
+        self.assertTrue(isinstance(metrics['followers_one_day_ago'], int))"""
+
+class MockMetricsTests(TestCase):
+
+  def test_mock_user_metrics(self):
+      metrics = mock_user_metrics()
+      self.assertIn('total_posts', metrics)
+      self.assertIn('current_followers', metrics)
+      self.assertIn('followers_yesterday', metrics)
+      self.assertIn('following', metrics)
+
+      # Check the type of values
+      self.assertIsInstance(metrics['total_posts'], int)
+      self.assertIsInstance(metrics['current_followers'], int)
+      self.assertIsInstance(metrics['followers_yesterday'], int)
+      self.assertIsInstance(metrics['following'], int)
+
+class MockPostsTests(TestCase):
+
+  def test_mock_posts(self):
+      posts = mock_posts()
+
+      # Check if posts is a list
+      self.assertIsInstance(posts, list)
+
+      # Check the structure of each post
+      for post in posts:
+          self.assertIn('image_path', post)
+          self.assertIn('title', post)
+          self.assertIn('date', post)
+          self.assertIn('likes', post)
+          self.assertIn('num_comments', post)
+
+          # Check the type of each attribute
+          self.assertIsInstance(post['title'], str)
+          self.assertIsInstance(post['date'], str)
+          self.assertIsInstance(post['likes'], list)
+          self.assertIsInstance(post['num_comments'], int)
+
+          # Check the structure of each like
+          for like in post['likes']:
+              self.assertIn('timestamp', like)
+              self.assertIsInstance(like['timestamp'], str)
+
