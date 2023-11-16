@@ -1,6 +1,6 @@
-from django.test import TestCase, LiveServerTestCase
+from django.test import TestCase, LiveServerTestCase, Client
 from django.contrib.auth.models import User
-from popularity_assessor.views import delete_account, mock_user_metrics, mock_posts
+from popularity_assessor.views import delete_account, get_posts, mock_user_metrics, mock_posts
 from django.urls import reverse
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -15,6 +15,30 @@ class ConnectInstagramTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'status': 'success'})
 
+
+# Test that all the fields appear in the profile view
+class ProfileViewGetPostTests(TestCase):
+    def setUp(self):
+      self.client = Client()
+      self.user = User.objects.create_user(username='testuser', password='testpassword')
+
+    def test_profile_view_post_expected_fields(self):
+      # Log in test user
+      self.client.login(username='testuser', password='testpassword')
+      # Retrieve user password page
+      response = self.client.get(reverse('popularity_assessor:profile', args=['testuser']))
+      # Ensure that the response is successfull
+      self.assertEqual(response.status_code, 200)
+      # Get expected post data from the get_post function
+      expected_posts = get_posts(None)
+      # Loop each post and assert that each specific field are present
+      for post_data in expected_posts:
+        self.assertContains(response, post_data['title'])
+        self.assertContains(response, post_data['date'])
+        self.assertContains(response, f'Likes: {post_data["likes"]}')
+        self.assertContains(response, f'Comments: {post_data["num_comments"]}')
+
+        
 class ProfileViewDeleteAccountTests(LiveServerTestCase):
     def setUp(self):
         User.objects.create_user(username='test', password='test_pass')
