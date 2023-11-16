@@ -1,5 +1,4 @@
 from unittest.mock import patch
-from facebook_api.extensions.authentication.extensions import general
 from facebook_api.extensions.error import RequestError
 from facebook_api.extensions.general.accounts import Accounts
 from facebook_api.extensions.general.me import Me
