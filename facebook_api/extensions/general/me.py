@@ -1,7 +1,7 @@
 from typing import Any
 from dataclasses import dataclass
 import json
-from ...extensions.error import RequestError
+from facebook_api.extensions.error import RequestError
 
 
 

@@ -4,27 +4,39 @@
 <!-- All html must be between these two lines to ensure bootstrap is picked up correctly -->
 <div class="row w-100 m-0 my-2 p-0">
   <div class="col-md-3">
-    <div class="custom-card shadow-sm border d-flex justify-content-center flex-column align-items-center py-5 gap-3">
-      <img style="border-radius: 50%; width:100px; height:100px" src="{% static 'src/default_avatar.png' %}">
-      <h3>{{ user_metrics.username }}</h3>
+    <div class="custom-card d-flex justify-content-center flex-column align-items-center py-5 gap-3">
+      <div class="border p-1">
+        <img src="{% static 'src/default_avatar.png' %}">
+      </div>
+      <span>
+        <h3 class="m-0">{{ user_metrics.username }}</h3>
+        <p class="m-0 text-muted">@IGUsername</p>
+      </span>
+
       <div class="row w-100">
+        <!-- TODO: If any of these values are greater than 9999 convert them in K, M, B format (e.g. 10K = 10000 Posts) -->
         <div class="col-sm-4">
-          <p style="text-align: center">{{ user_metrics.total_posts }}<br>Posts</p>
+          <p><span>{{ user_metrics.total_posts }}</span><br>Posts</p>
         </div>
         <div class="col-sm-4">
-          <p style="text-align: center">{{ user_metrics.current_followers }}<br>Followers</p>
+          <p><span>{{ user_metrics.current_followers }}</span><br>Followers</p>
         </div>
         <div class="col-sm-4">
-          <p style="text-align: center">{{ user_metrics.following }}<br>Following</p>
+          <p><span>{{ user_metrics.following }}</span><br>Following</p>
         </div>
       </div>
+
+    <p class="px-3 text-secondary" style="text-align: justify;">
+      👋 Hey, I'm a software dev 🖥️ working towards proficiency in ML 🤖. I code in many languages 💻 and dream of working at DRDO 🚀. Let's code together! 💻💪
+    </p>
     </div>
     <div class="d-flex justify-content-center w-100 mt-3">
       <button type="button" name="delete-account-button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
         Delete Account
       </button>
     </div>
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -33,13 +45,14 @@
             </button>
           </div>
           <div class="modal-body">
-            Head's up! You're about to delete your account. THIS IS IRREVERSIBLE. If you are sure you want to do this, click the "Delete Account" button below.
+            Head's up! You're about to delete your account. THIS IS IRREVERSIBLE. If you are sure you want to do this,
+            click the "Delete Account" button below.
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Don't Delete</button>
             <form action="" method="post">
-               {% csrf_token %} 
-            <button type="submit" class="btn btn-danger">Delete Account</button>
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete Account</button>
             </form>
           </div>
         </div>
@@ -99,21 +112,6 @@
     </div>
   </div>
 </div>
-</div>
-
-<!-- TODO: (RM1) Remove this in next iteration, once we implement the instagram account joining functionality -->
-<!--Temporary Pop up to submit Instagram Token For user-->
-<div id="token-pop-up" class="token-pop-up-overlay d-flex justify-content-center align-items-center">
-  <div class="bg-light p-3 rounded shadow border">
-    <h3>Instagram Token</h3>
-    <div class="d-flex flex-column gap-2">
-      {% csrf_token %}
-      <div class="form-group">
-        <input type="password" id="insta-token" name="insta_token" placeholder="Instagram Token">
-      </div>
-      <button class="btn btn-primary" onclick="submitInstaToken()">Submit</button>
-    </div>
-  </div>
 </div>
 
 {% endblock content %}

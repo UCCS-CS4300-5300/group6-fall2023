@@ -1,7 +1,7 @@
-from .request_base import request_base
-from .facebook_settings import facebook_Config
-from .utils.constants import BASE_URL
-from .extensions.general.extension import general
+from facebook_api.request_base import request_base
+from facebook_api.facebook_settings import facebook_Config
+from facebook_api.utils.constants import BASE_URL
+from facebook_api.extensions.general.extension import general
 
 class facebook_API(request_base):
     '''
@@ -40,6 +40,8 @@ class facebook_API(request_base):
         self.token              = newToken
         self.required_params    = {'access_token': self.token}
         
+
+
         
 
     
