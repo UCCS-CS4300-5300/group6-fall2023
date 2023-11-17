@@ -81,13 +81,21 @@ def profile(request, user_name):
     yesterday_formatted = yesterday.strftime("%m/%d")
     today_str = datetime.now().strftime("%Y-%m-%d")
     yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-
+  
     # Calculate likes from today and yesterday
+    '''
     likes_today = sum(
         len([
             like for like in post['likes']
             if like['timestamp'].startswith(today_str)
         ]) for post in posts)
+
+    '''
+    posts2 = get_posts(None)
+    likes_today = 0
+    for post in posts2:
+      likes_today += post['likes']
+
     likes_yesterday = sum(
         len([
             like for like in post['likes']
