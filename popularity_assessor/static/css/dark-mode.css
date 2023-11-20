@@ -1,87 +1,70 @@
-/* dark-mode.css */
-
-
 html body .container {
-    background-color: #121212 !important; /* Dark background with !important to ensure override */
-    color: #ffffff !important; /* White text with !important to ensure override */
+    background-color: #121212 !important;
+    color: #ffffff !important;
 }
 
-/* General background for body and html */
 html, body {
-    background-color: #121212; /* Dark mode background */
-    color: #ffffff; /* White text for dark mode */
+    background-color: #121212;
+    color: #ffffff;
 }
 
-/* Targeting the main container */
 .container {
-    background-color: #121212; /* Dark mode background */
-    color: #ffffff; /* White text for dark mode */
+    background-color: #121212;
+    color: #ffffff;
 }
 
-/* Bootstrap card component in dark mode */
 .card {
-    background-color: #262626; /* Dark grey for card */
-    color: #ffffff; /* White text for card content */
+    background-color: #262626;
+    color: #ffffff;
 }
 
-/* Bootstrap card header in dark mode */
 .card-header {
-    background-color: #333333; /* Slightly darker grey for card header */
-    color: #ffffff; /* White text for card header */
+    background-color: #333333;
+    color: #ffffff;
 }
 
-/* Form controls in dark mode */
 .form-control {
-    background-color: #333; /* Dark grey for input fields */
-    color: #ffffff; /* White text for input fields */
-    border: 1px solid #444; /* Slightly lighter border for visibility */
+    background-color: #333;
+    color: #ffffff;
+    border: 1px solid #444;
 }
 
-/* Form control focus state */
 .form-control:focus {
-    border-color: #555; /* Lighter grey for focused input border */
-    box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.25); /* Custom focus shadow to match dark mode */
+    border-color: #555;
+    box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.25);
 }
 
-/* Button styling in dark mode */
 .btn-primary {
-    background-color: #0d6efd; /* Bootstrap primary button color */
-    border-color: #0a58ca; /* Darker border color for primary button */
+    background-color: #0d6efd;
+    border-color: #0a58ca;
 }
 
-/* Link styling in dark mode */
 a, a:hover, a:focus, a:active {
-    color: #0d6efd; /* Bootstrap primary color for links */
-    text-decoration: none; /* Removing underline from links */
+    color: #0d6efd;
+    text-decoration: none;
 }
 
-/* Alerts in dark mode */
 .alert-danger {
-    background-color: #441c24; /* Dark background for danger alerts */
-    color: #ffffff; /* White text for readability */
+    background-color: #441c24;
+    color: #ffffff;
 }
 
-/* Navbar dark mode styling */
 .navbar {
-    background-color: #212529; /* Dark grey for navbar background */
-    color: #ffffff; /* White text for navbar */
+    background-color: #212529;
+    color: #ffffff;
 }
 
-/* Dark mode toggle button */
 #dark-mode-toggle {
-    background-color: #212529; /* Dark grey background for the toggle */
-    color: #ffffff; /* White text for the toggle */
-    border: none; /* No border for the toggle button */
+    background-color: #212529;
+    color: #ffffff;
+    border: none;
 }
 
-/* Any other specific overrides */
 .bg-light, .bg-white, .navbar-light {
-    background-color: #121212 !important; /* Dark mode background */
-    color: #ffffff !important; /* White text for dark mode */
+    background-color: #121212 !important;
+    color: #ffffff !important;
 }
 
-/* Ensuring the 'mt-5' class also adopts the dark mode styling */
 .mt-5 {
-    background-color: #121212; /* Dark mode background, if needed */
-    /* Other styles if needed */
+    background-color: #121212;
 }
