@@ -8,14 +8,14 @@ from django.http import JsonResponse
 from .models import InstagramAccount
 from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
-from facebook_api.helpers.get_accessToken import get_accessToken
+from facebook_api.helpers.get_accessToken import GetAccessToken
 from datetime import datetime, timedelta  # for mock data
 import random
 
 
 def connectInsta(request):
     code = request.GET.get('code')
-    user_auth = get_accessToken(code, request.get_host() + request.path)
+    user_auth = GetAccessToken().user(code, request.get_host() + request.path)
 
     # create a new instagram account in the DB
     account = InstagramAccount(user=request.user, token=user_auth.access_token)

@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 import random
 import os
 from functools import wraps
+from facebook_api.helpers.get_accessToken import GetAccessToken
 
 
 def facebook_auth_check(view_func):
@@ -20,10 +21,17 @@ def facebook_auth_check(view_func):
             # Check if the user's account is connected with an Instagram account
             IGAcc = InstagramAccount.objects.get(pk=user.id)
 
-            request.api = facebook_API(IGAcc.token, facebook_Config())
-            # request.api = facebook_API("EAAMI51H8X3wBO4wjVvqBFKqqpwfvLJNNNIv3rLX9ZBZCeyvOrfyDTZCkZB4eBMZCwsuZB212rk2LuvAahNCkrKflrPbPdS1vjaPSC8AdyiunlXd1wqKOzo00TNwBsnCvTsE3uVI4DpPZCZBsJoxtSGMZB2TCeqY8CgWjwRqPtzL9Ai3v7gsAULxCPgbqWTZApsoI1ukxS1sYDRNjYrt8nRNOKkgRhs03aScT31gcJ8HSOj1aVdNXqQBbc1BPKVerbfP3ljIDaljAZDZD", facebook_Config())
-            # TODO: Implement access code expiration check
+            getAccessToken = GetAccessToken()
 
+            # TODO: Implement access code expiration check
+            adminAccessToken = getAccessToken.admin().access_token
+            
+            validity = getAccessToken.debug(IGAcc.token, adminAccessToken)
+
+            if validity != 'valid':
+                redirect("popularity_assessor:connect-insta")
+
+            request.api = facebook_API(IGAcc.token, facebook_Config())
         except InstagramAccount.DoesNotExist:
             # Generate a random number for CSRF protection
             RANDOM_NUMBER = random.randrange(100000000, 999999999)
