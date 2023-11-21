@@ -6,28 +6,28 @@
   <div class="col-md-3">
     <div class="custom-card d-flex justify-content-center flex-column align-items-center py-5 gap-3">
       <div class="border p-1">
-        <img src="{% static 'src/default_avatar.png' %}">
+        <img src="{{ profile_metrics.profile_picture_url }}">
       </div>
       <span>
-        <h3 class="m-0">{{ user_metrics.username }}</h3>
-        <p class="m-0 text-muted">@IGUsername</p>
+        <h3 class="m-0">{{ profile_metrics.username }}</h3>
+        <!-- <p class="m-0 text-muted">{{profile_metrics.username}}</p> -->
       </span>
 
       <div class="row w-100">
         <!-- TODO: If any of these values are greater than 9999 convert them in K, M, B format (e.g. 10K = 10000 Posts) -->
         <div class="col-sm-4">
-          <p><span>{{ user_metrics.total_posts }}</span><br>Posts</p>
+          <p><span>{{ profile_metrics.media_count }}</span><br>Posts</p>
         </div>
         <div class="col-sm-4">
-          <p><span>{{ user_metrics.current_followers }}</span><br>Followers</p>
+          <p><span>{{ profile_metrics.followers_count }}</span><br>Followers</p>
         </div>
         <div class="col-sm-4">
-          <p><span>{{ user_metrics.following }}</span><br>Following</p>
+          <p><span>{{ profile_metrics.follows_count }}</span><br>Following</p>
         </div>
       </div>
 
     <p class="px-3 text-secondary" style="text-align: justify;">
-      👋 Hey, I'm a software dev 🖥️ working towards proficiency in ML 🤖. I code in many languages 💻 and dream of working at DRDO 🚀. Let's code together! 💻💪
+      {{ profile_metrics.biography }}
     </p>
     </div>
     <div class="d-flex justify-content-center w-100 mt-3">
