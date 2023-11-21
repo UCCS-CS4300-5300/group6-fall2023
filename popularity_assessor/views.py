@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+
 from .models import InstagramAccount
 from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
@@ -81,18 +82,29 @@ def profile(request, user_name):
     yesterday_formatted = yesterday.strftime("%m/%d")
     today_str = datetime.now().strftime("%Y-%m-%d")
     yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-
+  
     # Calculate likes from today and yesterday
+    '''
     likes_today = sum(
         len([
             like for like in post['likes']
             if like['timestamp'].startswith(today_str)
         ]) for post in posts)
+
+    '''
+    posts2 = get_posts(None)
+    likes_today = 0
+    for post in posts2:
+      likes_today += post['likes']
+
     likes_yesterday = sum(
         len([
             like for like in post['likes']
             if like['timestamp'].startswith(yesterday_str)
         ]) for post in posts)
+    
+    metrics  = request.api.general.get_profile_metrics()
+    
 
     # Pass data to the template
     return render(
@@ -101,7 +113,8 @@ def profile(request, user_name):
             "user_metrics": user_metrics,
             "likes_today": likes_today,
             "likes_yesterday": likes_yesterday,
-            "yesterday_date": yesterday_formatted
+            "yesterday_date": yesterday_formatted,
+            "profile_metrics": metrics
         })
 
 
