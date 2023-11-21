@@ -110,7 +110,7 @@
       <a href="#" class="btn btn-sm btn-info">Manage Metrics</a>
     </div>
     <div>
-      <canvas id="metricsChart">{{ week_dates|json_script:"dates" }}{{ week_likes|json_script:"likes" }}</canvas>
+      <canvas id="metricsChart" height="400">{{ week_dates|json_script:"dates" }}{{ week_likes|json_script:"likes" }}{{ week_followers|json_script:"followers" }}</canvas>
     </div>
   </div>
 </div>

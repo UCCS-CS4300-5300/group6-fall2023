@@ -23,6 +23,16 @@ def get_likes():
 
     return dates, likes
 
+def get_followers():
+
+  now = datetime.now()
+
+  dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
+  dates.reverse()
+  likes = [random.randint(-10, 25) for i in range(7)]
+
+  return dates, likes
+
 
 def connectInsta(request):
     code = request.GET.get('code')
@@ -107,6 +117,7 @@ def profile(request, user_name):
         ]) for post in posts)
 
     dates, likes = get_likes()
+    _, followers = get_followers()
 
     # Pass data to the template
     return render(
@@ -117,7 +128,8 @@ def profile(request, user_name):
             "likes_yesterday": likes_yesterday,
             "yesterday_date": yesterday_formatted,
             "week_dates": dates,
-            "week_likes": likes
+            "week_likes": likes,
+            "week_followers": followers
         })
 
 

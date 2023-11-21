@@ -3,6 +3,7 @@ $(document).ready(function () {
 
     var dates = JSON.parse(document.getElementById('dates').textContent);
     var likes = JSON.parse(document.getElementById('likes').textContent);
+    var followers = JSON.parse(document.getElementById('followers').textContent);
 
     const data = {
         labels: dates,
@@ -17,7 +18,7 @@ $(document).ready(function () {
             },
             {
                 label: 'Followers',
-                data: [76, 10, 43, 30, 100, 25, 40],
+                data: followers,
                 fill: true,
                 borderColor: 'rgb(233, 30, 99)',
                 backgroundColor: 'rgba(233, 30, 99, .4)',
@@ -29,7 +30,13 @@ $(document).ready(function () {
     const config = {
         type: 'line',
         data: data,
-      options: {
+      options: { 
+        plugins: {
+            title: {
+                display: true,
+                text: 'Weekly Gain/Loss'
+            }
+        }, 
           scales: {
               x: {
                   ticks: {
