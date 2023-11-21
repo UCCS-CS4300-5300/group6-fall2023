@@ -104,6 +104,17 @@ def profile(request, user_name):
         ]) for post in posts)
     
     metrics  = request.api.general.get_profile_metrics()
+    posts = request.api.general.get_posts()
+
+    # get the first 10 posts if there is less than 10 posts just get all of them
+    if len(posts.data) < 5:
+        posts = posts.data
+    else:
+        posts = posts.data[0:5]
+
+    posts_data = []
+    for post in posts:
+        posts_data.append(request.api.general.get_post_data(post.id))
     
 
     # Pass data to the template
