@@ -25,28 +25,39 @@
     <link id="dark-mode-style" href="{% static 'css/dark-mode.css' %}" rel="stylesheet" disabled>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="w-100 px-5">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'popularity_assessor:logout' %}">Logout</a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <button id="dark-mode-toggle" class="btn btn-outline-light">Toggle Dark Mode</button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid px-5">
+          <!-- Navbar brand/logo could go here if you have one -->
+
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <!-- Other nav items here -->
+              </ul>
+
+              <ul class="navbar-nav">
+                  {% if user.is_authenticated %}
+                  <li class="nav-item">
+                      <a class="nav-link" href="{% url 'popularity_assessor:logout' %}">Logout</a>
+                  </li>
+                  {% endif %}
+              </ul>
+
+              <!-- Dark mode toggle button, styled distinctly from the nav links -->
+            {% if user.is_authenticated %}
+              <button id="dark-mode-toggle" class="btn btn-sm btn-light ms-3" aria-label="Toggle dark mode">
+                  <i class="bi bi-moon-stars-fill"></i> Dark Mode
+              </button>
+            {% endif %}
+          </div>
+      </div>
+  </nav>
 
     {% block content %}{% endblock %}
-
+  {% if user.is_authenticated %}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var darkModeCSS = document.getElementById('dark-mode-style');
@@ -59,5 +70,6 @@
             });
         });
     </script>
+  {% endif %}
 </body>
 </html>
