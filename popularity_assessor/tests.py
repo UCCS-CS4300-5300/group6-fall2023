@@ -1,10 +1,28 @@
 from django.test import TestCase, LiveServerTestCase
 from django.contrib.auth.models import User
 from popularity_assessor.models import InstagramAccount
-from popularity_assessor.views import delete_account, get_posts, mock_user_metrics, mock_posts
+from popularity_assessor.views import delete_account, get_posts, mock_user_metrics, mock_posts, get_followers
 from django.urls import reverse
+from datetime import datetime, timedelta
 
+# Test the get_follower function
+class GetFollowersTests(TestCase):
+    def test_get_followers(self):
+      # Call function to get data
+      dates, followers = get_followers()
+      
+      # Assert based on the expected structure of the data
+      self.assertEqual(len(dates), 7)
+      self.assertEqual(len(followers), 7)
 
+      for data in dates:
+        self.assertTrue(isinstance(data, str))
+        self.assertTrue(datetime.strptime(data, "%Y-%m-%d"))
+
+      # Check type of each follower count
+      for count in followers:
+        self.assertTrue(isinstance(count, int))
+        
 # Test that all the fields appear in the profile view
 class ProfileViewGetPostTests(TestCase):
     def setUp(self):
