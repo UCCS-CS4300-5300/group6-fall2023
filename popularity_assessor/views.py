@@ -10,6 +10,18 @@ from .decorators import facebook_auth_check
 from facebook_api.helpers.get_accessToken import get_accessToken
 from datetime import datetime, timedelta  # for mock data
 import random
+import json
+
+
+def get_likes():
+
+    now = datetime.now()
+
+    dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
+    dates.reverse()
+    likes = [random.randint(-10, 25) for i in range(7)]
+
+    return dates, likes
 
 
 def connectInsta(request):
@@ -57,7 +69,7 @@ def delete_account(user=None):
 
 
 @login_required
-@facebook_auth_check
+# @facebook_auth_check
 def profile(request, user_name):
     # For now, the only POST request is used to delete account.
     # In the future, this must be checked further to very what the user want. (ex: delete vs. manage metrics
@@ -94,6 +106,8 @@ def profile(request, user_name):
             if like['timestamp'].startswith(yesterday_str)
         ]) for post in posts)
 
+    dates, likes = get_likes()
+
     # Pass data to the template
     return render(
         request, 'profile.html', {
@@ -101,7 +115,9 @@ def profile(request, user_name):
             "user_metrics": user_metrics,
             "likes_today": likes_today,
             "likes_yesterday": likes_yesterday,
-            "yesterday_date": yesterday_formatted
+            "yesterday_date": yesterday_formatted,
+            "week_dates": dates,
+            "week_likes": likes
         })
 
 
