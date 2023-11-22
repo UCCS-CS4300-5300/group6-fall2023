@@ -1,6 +1,7 @@
 from django.test import TestCase, LiveServerTestCase
 from django.contrib.auth.models import User
 from popularity_assessor.models import InstagramAccount
+from popularity_assessor.views import delete_account, get_posts, mock_user_metrics, mock_posts, get_followers, get_likes
 from facebook_api.extensions.general.basicProfileMetrics import BasicProfileMetrics
 from facebook_api.extensions.general.postInfo import PostInfo
 from facebook_api.extensions.general.media import Posts
@@ -8,6 +9,42 @@ from popularity_assessor.views import delete_account, get_posts, mock_user_metri
 from facebook_api.facebook import facebook_API
 from facebook_api.facebook_settings import facebook_Config
 from django.urls import reverse
+from datetime import datetime, timedelta
+
+
+# Test the get functions for metrics
+class GetMetricsTests(TestCase):
+    def test_get_followers(self):
+        # Call function to get data
+        dates, followers = get_followers()
+
+        # Assert based on the expected structure of the data
+        self.assertEqual(len(dates), 7)
+        self.assertEqual(len(followers), 7)
+
+        for data in dates:
+            self.assertTrue(isinstance(data, str))
+            self.assertTrue(datetime.strptime(data, "%Y-%m-%d"))
+
+        # Check type of each follower count
+        for count in followers:
+            self.assertTrue(isinstance(count, int))
+
+    def test_get_likes(self):
+        # Call function to get data
+        dates, likes = get_likes()
+
+        # Assert based on the expected structure of the data
+        self.assertEqual(len(dates), 7)
+        self.assertEqual(len(likes), 7)
+
+        for data in dates:
+            self.assertTrue(isinstance(data, str))
+            self.assertTrue(datetime.strptime(data, "%Y-%m-%d"))
+
+        # Check type of each follower count
+        for count in likes:
+            self.assertTrue(isinstance(count, int))
 
 
 def mock_profile_metrics():

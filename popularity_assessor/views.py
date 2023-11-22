@@ -13,6 +13,29 @@ from facebook_api.helpers.get_accessToken import GetAccessToken
 from datetime import datetime, timedelta  # for mock data
 import random
 import os
+import json
+
+
+def get_likes():
+
+    now = datetime.now()
+
+    dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
+    dates.reverse()
+    likes = [random.randint(-10, 25) for i in range(7)]
+
+    return dates, likes
+
+
+def get_followers():
+
+    now = datetime.now()
+
+    dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
+    dates.reverse()
+    likes = [random.randint(-10, 25) for i in range(7)]
+
+    return dates, likes
 
 def connectInsta(request):
     code = request.GET.get('code')
@@ -146,6 +169,9 @@ def profile(request, user_name):
             posts_data.append(postData)
     
 
+    dates, likes = get_likes()
+    _, followers = get_followers()
+
     # Pass data to the template
     return render(
         request, 'profile.html', {
@@ -154,6 +180,9 @@ def profile(request, user_name):
             "likes_today": likes_today,
             "likes_yesterday": likes_yesterday,
             "yesterday_date": yesterday_formatted,
+            "week_dates": dates,
+            "week_likes": likes,
+            "week_followers": followers,
             "profile_metrics": metrics
         })
 
