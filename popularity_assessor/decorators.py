@@ -5,9 +5,6 @@ from facebook_api.facebook import facebook_API
 from facebook_api.facebook import facebook_Config
 
 from .models import InstagramAccount
-from urllib.parse import urlencode
-import random
-import os
 from functools import wraps
 from facebook_api.helpers.get_accessToken import GetAccessToken
 
