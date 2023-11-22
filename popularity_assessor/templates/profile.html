@@ -63,7 +63,7 @@
     {% for post in posts %}
     <div class="card shadow border">
         {% with post.img_path as img_static %}
-      <img src="{{ permalink }}" class="card-img-top" alt="Post image here">
+      <img src="{{ post.media_url }}" class="card-img-top" alt="Post image here">
       {% endwith %}
       <div class="card-body">
         <h5 class="card-title">{{ post.caption }}</h5>
