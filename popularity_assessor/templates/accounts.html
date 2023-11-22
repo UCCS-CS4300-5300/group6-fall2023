@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="d-flex flex-column justify-content-center align-items-center w-100" style="height: 100vh;">
+    <img src="{% static 'src/Meta-Logo.png' %}" style="width: 200px;">
+    <h1>Welcome {{ user.username }} !</h1>
+    <h3>{{ message }}</h3>
+    <a href="{% url 'popularity_assessor:facebook-auth' %}" class="btn btn-primary mt-3 d-flex flex-row align-items-center justify-content-center gap-2"><img src="{% static 'src/facebook.svg' %}"> Connect with Facebook</a>
+</div>
+{% endblock content %}

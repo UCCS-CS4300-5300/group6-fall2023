@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -10,13 +11,14 @@ from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
 from facebook_api.helpers.get_accessToken import get_accessToken
 from facebook_api.extensions.error import RequestError
+from facebook_api.helpers.get_accessToken import GetAccessToken
 from datetime import datetime, timedelta  # for mock data
 import random
-
+import os
 
 def connectInsta(request):
     code = request.GET.get('code')
-    user_auth = get_accessToken(code, request.get_host() + request.path)
+    user_auth = GetAccessToken().user(code, request.get_host() + request.path)
 
     # create a new instagram account in the DB
     account = InstagramAccount(user=request.user, token=user_auth.access_token)
@@ -24,6 +26,20 @@ def connectInsta(request):
 
     return redirect('popularity_assessor:profile',
                     user_name=request.user.username)
+
+
+def redirectToFacebookAuth(request):
+    RANDOM_NUMBER = random.randrange(100000000, 999999999)
+    client_id = os.getenv("FB_CLIENT_ID")
+    if client_id is None:
+                raise ValueError(
+                    "Facebook client id environment variable not set")
+    
+    url = request.build_absolute_uri(reverse('popularity_assessor:connect-insta'))
+
+    fb_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id={client_id}&redirect_uri={url}&response_type=code&state={RANDOM_NUMBER}"
+
+    return redirect(fb_auth_url)
 
 
 # This function will be used to get all of the user's posts and post metadata
@@ -48,6 +64,20 @@ def delete_account(user=None):
     else:
         raise User.DoesNotExist
 
+@login_required
+def connectFacebook(request):
+
+    message = "Looks like your account is not connected to Facebook."
+
+    try:
+        message = request.message
+    except:
+        pass
+
+    return render(request, 'accounts.html', {
+        "user": request.user,
+        "message": message
+    })
 
 @login_required
 @facebook_auth_check
