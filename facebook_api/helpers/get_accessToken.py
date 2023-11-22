@@ -3,6 +3,7 @@ from ..extensions.error import RequestError
 import requests
 import os
 
+
 class GetAccessToken:
     def __init__(self):
         self.client_id = os.getenv("FB_CLIENT_ID")
@@ -13,7 +14,7 @@ class GetAccessToken:
         params = {
             "code": code,
             "client_id": self.client_id,
-            "redirect_uri": "http://" + redirect_url,
+            "redirect_uri": "https://" + redirect_url,
             "client_secret": self.client_secret
         }
         resp = requests.get(url, params=params)
@@ -25,7 +26,6 @@ class GetAccessToken:
         # or if the status code is greater than 400
         if resp.status_code >= 400 or resp.json().get('error') != None:
             return RequestError.from_dict(resp.json())
-        
 
         # if we have an object return type, we want to return the object
         # this will make it easier to use the api sinc we can get an
@@ -53,20 +53,17 @@ class GetAccessToken:
         # or if the status code is greater than 400
         if resp.status_code >= 400 or resp.json().get('error') != None:
             return RequestError.from_dict(resp.json())
-        
+
         # if we have an object return type, we want to return the object
         # this will make it easier to use the api sinc we can get an
         # object back instead of a dict and have to convert it
         if UserAuth != None:
             root = UserAuth.from_dict(resp.json())
             return root
-        
+
     def debug(self, access_token: str, app_token: str):
         url = "https://graph.facebook.com/debug_token"
-        params = {
-            "input_token": access_token,
-            "access_token": app_token
-        }
+        params = {"input_token": access_token, "access_token": app_token}
 
         resp = requests.get(url, params=params)
 
@@ -85,5 +82,5 @@ class GetAccessToken:
                     return 'expired'  # Token is expired
                 else:
                     return 'invalid'  # Token is invalid for other reasons
-        
+
         return 'valid'
