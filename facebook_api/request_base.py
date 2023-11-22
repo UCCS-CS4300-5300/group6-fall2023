@@ -52,6 +52,8 @@ class request_base:
         # or if the status code is greater than 400
         if resp.status_code >= 400 or resp.json().get('error') != None:
             return RequestError.from_dict(resp.json())
+        
+
 
         # if we have an object return type, we want to return the object
         # this will make it easier to use the api sinc we can get an
