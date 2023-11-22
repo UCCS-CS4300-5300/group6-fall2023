@@ -138,6 +138,9 @@ def profile(request, user_name):
 
         for post in posts:
             postData = request.api.general.get_post_data(post.id)
+            if (type(postData) == RequestError or postData.media_type != "IMAGE"):
+                continue
+
             # convert the time(2023-05-15T02:15:40+0000) into date only 
             postData.timestamp = postData.timestamp.split('T')[0]
             posts_data.append(postData)
