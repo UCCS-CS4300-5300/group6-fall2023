@@ -78,7 +78,7 @@ def connectFacebook(request):
     })
 
 @login_required
-@facebook_auth_check
+#@facebook_auth_check
 def profile(request, user_name):
     # For now, the only POST request is used to delete account.
     # In the future, this must be checked further to very what the user want. (ex: delete vs. manage metrics
