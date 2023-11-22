@@ -37,6 +37,7 @@ def get_followers():
 
     return dates, likes
 
+
 def connectInsta(request):
     code = request.GET.get('code')
     user_auth = GetAccessToken().user(code, request.get_host() + request.path)
@@ -53,10 +54,12 @@ def redirectToFacebookAuth(request):
     RANDOM_NUMBER = random.randrange(100000000, 999999999)
     client_id = os.getenv("FB_CLIENT_ID")
     if client_id is None:
-                raise ValueError(
-                    "Facebook client id environment variable not set")
-    
-    url = request.build_absolute_uri(reverse('popularity_assessor:connect-insta'))
+        raise ValueError("Facebook client id environment variable not set")
+
+    url = request.build_absolute_uri(
+        reverse('popularity_assessor:connect-insta'))
+
+    url = url.replace("http://", "https://")
 
     fb_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id={client_id}&redirect_uri={url}&response_type=code&state={RANDOM_NUMBER}"
 
@@ -67,10 +70,12 @@ def redirectToFacebookAuth(request):
 def get_posts(self):
     posts = [{
         "like_count": 2,
-        "media_url": "https://scontent-iad3-1.cdninstagram.com/o1/v/t16/f1/m82/0C4C916525DF02AE1742724BC26F39B2_video_dashinit.mp4?efg=eyJ2ZW5jb2RlX3RhZyI6InZ0c192b2RfdXJsZ2VuLmNsaXBzLnVua25vd24tQzMuNTc2LmRhc2hfYmFzZWxpbmVfMV92MSJ9&_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=104&vs=544928507820758_700565062&_nc_vs=HBksFQIYT2lnX3hwdl9yZWVsc19wZXJtYW5lbnRfcHJvZC8wQzRDOTE2NTI1REYwMkFFMTc0MjcyNEJDMjZGMzlCMl92aWRlb19kYXNoaW5pdC5tcDQVAALIAQAVAhg6cGFzc3Rocm91Z2hfZXZlcnN0b3JlL0dDYWN0QlFTZUFtRzJXNEdBS0NLOTJKbjRCMDRicV9FQUFBRhUCAsgBACgAGAAbAYgHdXNlX29pbAExFQAAJuTVgdnZxPFAFQIoAkMzLBdANarAgxJumBgSZGFzaF9iYXNlbGluZV8xX3YxEQB1AAA%3D&ccb=9-4&oh=00_AfBJBVE3P_sDc-_aDu1ZEjKQzeFS4rTb8p9niaanOBstFQ&oe=655EC4A3&_nc_sid=1d576d&_nc_rid=deb3ca28cb",
+        "media_url":
+        "https://scontent-iad3-1.cdninstagram.com/o1/v/t16/f1/m82/0C4C916525DF02AE1742724BC26F39B2_video_dashinit.mp4?efg=eyJ2ZW5jb2RlX3RhZyI6InZ0c192b2RfdXJsZ2VuLmNsaXBzLnVua25vd24tQzMuNTc2LmRhc2hfYmFzZWxpbmVfMV92MSJ9&_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=104&vs=544928507820758_700565062&_nc_vs=HBksFQIYT2lnX3hwdl9yZWVsc19wZXJtYW5lbnRfcHJvZC8wQzRDOTE2NTI1REYwMkFFMTc0MjcyNEJDMjZGMzlCMl92aWRlb19kYXNoaW5pdC5tcDQVAALIAQAVAhg6cGFzc3Rocm91Z2hfZXZlcnN0b3JlL0dDYWN0QlFTZUFtRzJXNEdBS0NLOTJKbjRCMDRicV9FQUFBRhUCAsgBACgAGAAbAYgHdXNlX29pbAExFQAAJuTVgdnZxPFAFQIoAkMzLBdANarAgxJumBgSZGFzaF9iYXNlbGluZV8xX3YxEQB1AAA%3D&ccb=9-4&oh=00_AfBJBVE3P_sDc-_aDu1ZEjKQzeFS4rTb8p9niaanOBstFQ&oe=655EC4A3&_nc_sid=1d576d&_nc_rid=deb3ca28cb",
         "permalink": "https://www.instagram.com/reel/CsPyT95AQKc/",
         "timestamp": "2023-05-15T02:15:40+0000",
-        "caption": "Surrounding yourself with winners is the key to success 🏆 Follow along as we take inspiration from Kevin Hart and his winning mindset 🤩 Tune in to the Pivot Podcast and Thrive Minds for more motivational videos that will help you reach new heights 🚀 #kevinhart #pivotpodcast #thriveminds #motivationalvideo #fyp",
+        "caption":
+        "Surrounding yourself with winners is the key to success 🏆 Follow along as we take inspiration from Kevin Hart and his winning mindset 🤩 Tune in to the Pivot Podcast and Thrive Minds for more motivational videos that will help you reach new heights 🚀 #kevinhart #pivotpodcast #thriveminds #motivationalvideo #fyp",
         "comments_count": 0,
         "media_type": "VIDEO",
         "id": "17989257334983575"
@@ -84,6 +89,7 @@ def delete_account(user=None):
         user.delete()
     else:
         raise User.DoesNotExist
+
 
 @login_required
 def connectFacebook(request):
@@ -99,6 +105,7 @@ def connectFacebook(request):
         "user": request.user,
         "message": message
     })
+
 
 @login_required
 @facebook_auth_check
@@ -125,7 +132,7 @@ def profile(request, user_name):
     yesterday_formatted = yesterday.strftime("%m/%d")
     today_str = datetime.now().strftime("%Y-%m-%d")
     yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-  
+
     # Calculate likes from today and yesterday
     '''
     likes_today = sum(
@@ -138,19 +145,18 @@ def profile(request, user_name):
     posts2 = get_posts(None)
     likes_today = 0
     for post in posts2:
-      likes_today += post['like_count']
+        likes_today += post['like_count']
 
     likes_yesterday = sum(
         len([
             like for like in post['like_count']
             if like['timestamp'].startswith(yesterday_str)
         ]) for post in posts)
-    
-    metrics  = request.api.general.get_profile_metrics()
+
+    metrics = request.api.general.get_profile_metrics()
     posts = request.api.general.get_posts()
     posts_data = []
     if (type(posts) != RequestError):
-
 
         # get the first 10 posts if there is less than 10 posts just get all of them
         if len(posts.data) < 5:
@@ -158,16 +164,15 @@ def profile(request, user_name):
         else:
             posts = posts.data[0:5]
 
-
         for post in posts:
             postData = request.api.general.get_post_data(post.id)
-            if (type(postData) == RequestError or postData.media_type != "IMAGE"):
+            if (type(postData) == RequestError
+                    or postData.media_type != "IMAGE"):
                 continue
 
-            # convert the time(2023-05-15T02:15:40+0000) into date only 
+            # convert the time(2023-05-15T02:15:40+0000) into date only
             postData.timestamp = postData.timestamp.split('T')[0]
             posts_data.append(postData)
-    
 
     dates, likes = get_likes()
     _, followers = get_followers()
@@ -261,6 +266,5 @@ def mock_posts():
             'like_count': likes,
             'comments_count': random.randint(2, 10)
         })
-
 
     return posts
