@@ -34,7 +34,11 @@ $(document).ready(function () {
         plugins: {
             title: {
                 display: true,
-                text: 'Weekly Gain/Loss'
+                text: 'Weekly Gain/Loss',
+                font: {
+                  size: 30,
+                  style: 'italic'
+                }
             }
         }, 
           scales: {

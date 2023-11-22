@@ -23,15 +23,16 @@ def get_likes():
 
     return dates, likes
 
+
 def get_followers():
 
-  now = datetime.now()
+    now = datetime.now()
 
-  dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
-  dates.reverse()
-  likes = [random.randint(-10, 25) for i in range(7)]
+    dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
+    dates.reverse()
+    likes = [random.randint(-10, 25) for i in range(7)]
 
-  return dates, likes
+    return dates, likes
 
 
 def connectInsta(request):
@@ -79,7 +80,7 @@ def delete_account(user=None):
 
 
 @login_required
-# @facebook_auth_check
+@facebook_auth_check
 def profile(request, user_name):
     # For now, the only POST request is used to delete account.
     # In the future, this must be checked further to very what the user want. (ex: delete vs. manage metrics
