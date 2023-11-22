@@ -9,6 +9,7 @@ from .models import InstagramAccount
 from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
 from facebook_api.helpers.get_accessToken import get_accessToken
+from facebook_api.extensions.error import RequestError
 from datetime import datetime, timedelta  # for mock data
 import random
 
@@ -28,23 +29,14 @@ def connectInsta(request):
 # This function will be used to get all of the user's posts and post metadata
 def get_posts(self):
     posts = [{
-        'title': 'Beach Rocks',
-        'img_path': 'src/post_sample_1.jpg',
-        'num_comments': 4,
-        'date': 'September 9, 2023',
-        'likes': 30,
-    }, {
-        'title': 'New Beginning',
-        'img_path': 'src/post_sample_2.jpg',
-        'num_comments': 9,
-        'date': 'November 6, 2021',
-        'likes': 50,
-    }, {
-        'title': 'Snowy Owl',
-        'img_path': 'src/post_sample_3.jpg',
-        'num_comments': 10,
-        'date': 'November 11, 2022',
-        'likes': 60,
+        "like_count": 2,
+        "media_url": "https://scontent-iad3-1.cdninstagram.com/o1/v/t16/f1/m82/0C4C916525DF02AE1742724BC26F39B2_video_dashinit.mp4?efg=eyJ2ZW5jb2RlX3RhZyI6InZ0c192b2RfdXJsZ2VuLmNsaXBzLnVua25vd24tQzMuNTc2LmRhc2hfYmFzZWxpbmVfMV92MSJ9&_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=104&vs=544928507820758_700565062&_nc_vs=HBksFQIYT2lnX3hwdl9yZWVsc19wZXJtYW5lbnRfcHJvZC8wQzRDOTE2NTI1REYwMkFFMTc0MjcyNEJDMjZGMzlCMl92aWRlb19kYXNoaW5pdC5tcDQVAALIAQAVAhg6cGFzc3Rocm91Z2hfZXZlcnN0b3JlL0dDYWN0QlFTZUFtRzJXNEdBS0NLOTJKbjRCMDRicV9FQUFBRhUCAsgBACgAGAAbAYgHdXNlX29pbAExFQAAJuTVgdnZxPFAFQIoAkMzLBdANarAgxJumBgSZGFzaF9iYXNlbGluZV8xX3YxEQB1AAA%3D&ccb=9-4&oh=00_AfBJBVE3P_sDc-_aDu1ZEjKQzeFS4rTb8p9niaanOBstFQ&oe=655EC4A3&_nc_sid=1d576d&_nc_rid=deb3ca28cb",
+        "permalink": "https://www.instagram.com/reel/CsPyT95AQKc/",
+        "timestamp": "2023-05-15T02:15:40+0000",
+        "caption": "Surrounding yourself with winners is the key to success 🏆 Follow along as we take inspiration from Kevin Hart and his winning mindset 🤩 Tune in to the Pivot Podcast and Thrive Minds for more motivational videos that will help you reach new heights 🚀 #kevinhart #pivotpodcast #thriveminds #motivationalvideo #fyp",
+        "comments_count": 0,
+        "media_type": "VIDEO",
+        "id": "17989257334983575"
     }]
 
     return posts
@@ -95,32 +87,38 @@ def profile(request, user_name):
     posts2 = get_posts(None)
     likes_today = 0
     for post in posts2:
-      likes_today += post['likes']
+      likes_today += post['like_count']
 
     likes_yesterday = sum(
         len([
-            like for like in post['likes']
+            like for like in post['like_count']
             if like['timestamp'].startswith(yesterday_str)
         ]) for post in posts)
     
     metrics  = request.api.general.get_profile_metrics()
     posts = request.api.general.get_posts()
-
-    # get the first 10 posts if there is less than 10 posts just get all of them
-    if len(posts.data) < 5:
-        posts = posts.data
-    else:
-        posts = posts.data[0:5]
-
     posts_data = []
-    for post in posts:
-        posts_data.append(request.api.general.get_post_data(post.id))
+    if (type(posts) != RequestError):
+
+
+        # get the first 10 posts if there is less than 10 posts just get all of them
+        if len(posts.data) < 5:
+            posts = posts.data
+        else:
+            posts = posts.data[0:5]
+
+
+        for post in posts:
+            postData = request.api.general.get_post_data(post.id)
+            # convert the time(2023-05-15T02:15:40+0000) into date only 
+            postData.timestamp = postData.timestamp.split('T')[0]
+            posts_data.append(postData)
     
 
     # Pass data to the template
     return render(
         request, 'profile.html', {
-            "posts": get_posts(None),
+            "posts": posts_data,
             "user_metrics": user_metrics,
             "likes_today": likes_today,
             "likes_yesterday": likes_yesterday,
@@ -200,8 +198,9 @@ def mock_posts():
             'image_path': f'path/to/image{i}.jpg',
             'title': f'Post {i}',
             'date': post_date.strftime("%Y-%m-%d"),
-            'likes': likes,
-            'num_comments': random.randint(2, 10)
+            'like_count': likes,
+            'comments_count': random.randint(2, 10)
         })
+
 
     return posts
