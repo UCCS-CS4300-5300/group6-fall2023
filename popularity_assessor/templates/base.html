@@ -22,7 +22,7 @@
     <link href="{% static 'css/global.css' %}" rel="stylesheet">
     <link href="{% static 'css/navigation.css' %}" rel="stylesheet">
     <link href="{% static 'css/profile.css' %}" rel="stylesheet">
-    <link id="dark-mode-style" href="{% static 'css/dark-mode.css' %}" rel="stylesheet" disabled>
+    <link id="dark-mode-style" href="{% static 'css/dark_mode.css' %}" rel="stylesheet" disabled>
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -47,17 +47,14 @@
               </ul>
 
               <!-- Dark mode toggle button, styled distinctly from the nav links -->
-            {% if user.is_authenticated %}
               <button id="dark-mode-toggle" class="btn btn-sm btn-light ms-3" aria-label="Toggle dark mode">
                   <i class="bi bi-moon-stars-fill"></i> Dark Mode
               </button>
-            {% endif %}
           </div>
       </div>
   </nav>
 
     {% block content %}{% endblock %}
-  {% if user.is_authenticated %}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var darkModeCSS = document.getElementById('dark-mode-style');
@@ -70,6 +67,5 @@
             });
         });
     </script>
-  {% endif %}
 </body>
 </html>
