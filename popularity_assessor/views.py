@@ -1,3 +1,21 @@
+"""
+Controller for popularity_assessor
+
+Functions:
+    get_likes() -> str list, int list
+    get_followers() -> str list, int list
+    connect_insta(request) -> redirect
+    redirect_to_facebook_auth(request) -> redirect
+    get_posts() -> dict list
+    delete_account(user) -> None
+    connectFacebook(request) -> render
+    profile(request, user_name) -> render
+    register(request) -> redirect
+    custom_login(request) -> redirect
+    mock_user_metrics() -> dict
+    mock_posts() -> dict list
+"""
+
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -13,11 +31,12 @@ from facebook_api.helpers.get_accessToken import GetAccessToken
 from datetime import datetime, timedelta  # for mock data
 import random
 import os
-import json
 
 
 def get_likes():
-
+    '''
+    Mock likes from Instagram for last seven days
+    '''
     now = datetime.now()
 
     dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
@@ -28,7 +47,9 @@ def get_likes():
 
 
 def get_followers():
-
+    '''
+    Mock followers from Instagram for last seven days
+    '''
     now = datetime.now()
 
     dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
@@ -38,7 +59,10 @@ def get_followers():
     return dates, likes
 
 
-def connectInsta(request):
+def connect_insta(request):
+    '''
+    connect Instagram account to the app
+    '''
     code = request.GET.get('code')
     user_auth = GetAccessToken().user(code, request.get_host() + request.path)
 
@@ -50,8 +74,11 @@ def connectInsta(request):
                     user_name=request.user.username)
 
 
-def redirectToFacebookAuth(request):
-    RANDOM_NUMBER = random.randrange(100000000, 999999999)
+def redirect_to_facebook_auth(request):
+    '''
+    if user has not linked their facebook to the app, redirect to facebook auth
+    '''
+    rand_state = random.randrange(100000000, 999999999)
     client_id = os.getenv("FB_CLIENT_ID")
     if client_id is None:
         raise ValueError("Facebook client id environment variable not set")
@@ -61,21 +88,37 @@ def redirectToFacebookAuth(request):
 
     url = url.replace("http://", "https://")
 
-    fb_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id={client_id}&redirect_uri={url}&response_type=code&state={RANDOM_NUMBER}"
+    fb_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id=\
+    {client_id}&redirect_uri={url}&response_type=code&state={rand_state}"
 
     return redirect(fb_auth_url)
 
 
-# This function will be used to get all of the user's posts and post metadata
-def get_posts(self):
+def get_posts():
+    '''
+    get list of all user posts
+    '''
     posts = [{
         "like_count": 2,
-        "media_url":
-        "https://scontent-iad3-1.cdninstagram.com/o1/v/t16/f1/m82/0C4C916525DF02AE1742724BC26F39B2_video_dashinit.mp4?efg=eyJ2ZW5jb2RlX3RhZyI6InZ0c192b2RfdXJsZ2VuLmNsaXBzLnVua25vd24tQzMuNTc2LmRhc2hfYmFzZWxpbmVfMV92MSJ9&_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=104&vs=544928507820758_700565062&_nc_vs=HBksFQIYT2lnX3hwdl9yZWVsc19wZXJtYW5lbnRfcHJvZC8wQzRDOTE2NTI1REYwMkFFMTc0MjcyNEJDMjZGMzlCMl92aWRlb19kYXNoaW5pdC5tcDQVAALIAQAVAhg6cGFzc3Rocm91Z2hfZXZlcnN0b3JlL0dDYWN0QlFTZUFtRzJXNEdBS0NLOTJKbjRCMDRicV9FQUFBRhUCAsgBACgAGAAbAYgHdXNlX29pbAExFQAAJuTVgdnZxPFAFQIoAkMzLBdANarAgxJumBgSZGFzaF9iYXNlbGluZV8xX3YxEQB1AAA%3D&ccb=9-4&oh=00_AfBJBVE3P_sDc-_aDu1ZEjKQzeFS4rTb8p9niaanOBstFQ&oe=655EC4A3&_nc_sid=1d576d&_nc_rid=deb3ca28cb",
+        "media_url": "https://scontent-iad3-1.cdninstagram.com/o1/v/t16/f1/m82\
+        /0C4C916525DF02AE1742724BC26F39B2_video_dashinit.mp4?\
+        efg=eyJ2ZW5jb2RlX3RhZyI6InZ0c192b2RfdXJsZ2VuLmNsaXBzLnV\
+        ua25vd24tQzMuNTc2LmRhc2hfYmFzZWxpbmVfMV92MSJ9&_nc_ht=scontent-iad3\
+        -1.cdninstagram.com&_nc_cat=104&vs=544928507820758_700565062&_nc_vs\
+        =HBksFQIYT2lnX3hwdl9yZWVsc19wZXJtYW5lbnRfcHJvZC8wQzRDOTE2NTI1REYwMk\
+        FFMTc0MjcyNEJDMjZGMzlCMl92aWRlb19kYXNoaW5pdC5tcDQVAALIAQAVAhg6cGFzc\
+        3Rocm91Z2hfZXZlcnN0b3JlL0dDYWN0QlFTZUFtRzJXNEdBS0NLOTJKbjRCMDRicV9FQU\
+        FBRhUCAsgBACgAGAAbAYgHdXNlX29pbAExFQAAJuTVgdnZxPFAFQIoAkMzLBdANarAgx\
+        JumBgSZGFzaF9iYXNlbGluZV8xX3YxEQB1AAA%3D&ccb=9-4&oh=00_AfBJBVE3P_sDc\
+        -_aDu1ZEjKQzeFS4rTb8p9niaanOBstFQ&oe=655EC4A3&_nc_sid=1d576d&_nc_rid=deb3ca28cb",
         "permalink": "https://www.instagram.com/reel/CsPyT95AQKc/",
         "timestamp": "2023-05-15T02:15:40+0000",
         "caption":
-        "Surrounding yourself with winners is the key to success 🏆 Follow along as we take inspiration from Kevin Hart and his winning mindset 🤩 Tune in to the Pivot Podcast and Thrive Minds for more motivational videos that will help you reach new heights 🚀 #kevinhart #pivotpodcast #thriveminds #motivationalvideo #fyp",
+        "Surrounding yourself with winners is the key to success 🏆 F\
+        ollow along as we take inspiration from Kevin Hart and his winning mindset 🤩\
+         Tune in to the Pivot Podcast and Thrive Minds for more motivational v\
+        deos that will help you reach new heights 🚀 #kevinhart #pi\
+        votpodcast #thriveminds #motivationalvideo #fyp",
         "comments_count": 0,
         "media_type": "VIDEO",
         "id": "17989257334983575"
@@ -85,6 +128,9 @@ def get_posts(self):
 
 
 def delete_account(user=None):
+    '''
+    deletes user account, raises DoesNotExist error if the user is not given
+    '''
     if user is not None:
         user.delete()
     else:
@@ -111,7 +157,8 @@ def connectFacebook(request):
 @facebook_auth_check
 def profile(request, user_name):
     # For now, the only POST request is used to delete account.
-    # In the future, this must be checked further to very what the user want. (ex: delete vs. manage metrics
+    # In the future, this must be checked further to very what the user want.
+    # (ex: delete vs. manage metrics
     if request.method == "POST":
         user_to_delete = request.user
         delete_account(user_to_delete)
@@ -119,7 +166,7 @@ def profile(request, user_name):
 
     # Use the new mock functions
     user_metrics = mock_user_metrics()
-    posts = mock_posts()
+    # posts = mock_posts()
 
     # Format the dates for today and yesterday
     # Get the current date and time
@@ -130,18 +177,8 @@ def profile(request, user_name):
 
     # Format the date as MM/DD
     yesterday_formatted = yesterday.strftime("%m/%d")
-    today_str = datetime.now().strftime("%Y-%m-%d")
     yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 
-    # Calculate likes from today and yesterday
-    '''
-    likes_today = sum(
-        len([
-            like for like in post['likes']
-            if like['timestamp'].startswith(today_str)
-        ]) for post in posts)
-
-    '''
     posts2 = get_posts(None)
     likes_today = 0
     for post in posts2:
@@ -156,7 +193,7 @@ def profile(request, user_name):
     metrics = request.api.general.get_profile_metrics()
     posts = request.api.general.get_posts()
     posts_data = []
-    if (type(posts) != RequestError):
+    if type(posts) != RequestError:
 
         # get the first 10 posts if there is less than 10 posts just get all of them
         if len(posts.data) < 5:
