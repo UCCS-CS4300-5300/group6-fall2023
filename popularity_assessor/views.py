@@ -8,29 +8,27 @@ Functions:
     redirect_to_facebook_auth(request) -> redirect
     get_posts() -> dict list
     delete_account(user) -> None
-    connectFacebook(request) -> render
+    connect_facebook(request) -> render
     profile(request, user_name) -> render
     register(request) -> redirect
     custom_login(request) -> redirect
     mock_user_metrics() -> dict
     mock_posts() -> dict list
 """
-
+from datetime import datetime, timedelta  # for mock data
+import random
+import os
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-
+from facebook_api.extensions.error import RequestError
+from facebook_api.helpers.get_accessToken import GetAccessToken
 from .models import InstagramAccount
 from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
-from facebook_api.extensions.error import RequestError
-from facebook_api.helpers.get_accessToken import GetAccessToken
-from datetime import datetime, timedelta  # for mock data
-import random
-import os
 
 
 def get_likes():
@@ -138,7 +136,10 @@ def delete_account(user=None):
 
 
 @login_required
-def connectFacebook(request):
+def connect_facebook(request):
+    '''
+    connects user to facebook account
+    '''
 
     message = "Looks like your account is not connected to Facebook."
 
@@ -155,45 +156,31 @@ def connectFacebook(request):
 
 @login_required
 @facebook_auth_check
-def profile(request, user_name):
+def profile(request):
+    '''
+    displays user profile
+    '''
     # For now, the only POST request is used to delete account.
     # In the future, this must be checked further to very what the user want.
     # (ex: delete vs. manage metrics
     if request.method == "POST":
-        user_to_delete = request.user
-        delete_account(user_to_delete)
+        delete_account(request.user)
         return redirect('popularity_assessor:login')
 
     # Use the new mock functions
     user_metrics = mock_user_metrics()
     # posts = mock_posts()
 
-    # Format the dates for today and yesterday
-    # Get the current date and time
-    now = datetime.now()
 
-    # Calculate the date for yesterday
-    yesterday = now - timedelta(days=2)
-
-    # Format the date as MM/DD
-    yesterday_formatted = yesterday.strftime("%m/%d")
-    yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
-
-    posts2 = get_posts(None)
+    posts2 = get_posts()
     likes_today = 0
     for post in posts2:
         likes_today += post['like_count']
 
-    likes_yesterday = sum(
-        len([
-            like for like in post['like_count']
-            if like['timestamp'].startswith(yesterday_str)
-        ]) for post in posts)
-
     metrics = request.api.general.get_profile_metrics()
     posts = request.api.general.get_posts()
     posts_data = []
-    if type(posts) != RequestError:
+    if isinstance(posts) != RequestError:
 
         # get the first 10 posts if there is less than 10 posts just get all of them
         if len(posts.data) < 5:
@@ -202,14 +189,14 @@ def profile(request, user_name):
             posts = posts.data[0:5]
 
         for post in posts:
-            postData = request.api.general.get_post_data(post.id)
-            if (type(postData) == RequestError
-                    or postData.media_type != "IMAGE"):
+            post_data = request.api.general.get_post_data(post.id)
+            if (isinstance(post_data) == RequestError
+                    or post_data.media_type != "IMAGE"):
                 continue
 
             # convert the time(2023-05-15T02:15:40+0000) into date only
-            postData.timestamp = postData.timestamp.split('T')[0]
-            posts_data.append(postData)
+            post_data.timestamp = post_data.timestamp.split('T')[0]
+            posts_data.append(post_data)
 
     dates, likes = get_likes()
     _, followers = get_followers()
@@ -220,8 +207,6 @@ def profile(request, user_name):
             "posts": posts_data,
             "user_metrics": user_metrics,
             "likes_today": likes_today,
-            "likes_yesterday": likes_yesterday,
-            "yesterday_date": yesterday_formatted,
             "week_dates": dates,
             "week_likes": likes,
             "week_followers": followers,
@@ -230,6 +215,9 @@ def profile(request, user_name):
 
 
 def register(request):
+    '''
+    registers a new user
+    '''
     # Handle the POST request (form submission)
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -248,9 +236,12 @@ def register(request):
     password_help_texts = get_password_validators_help_texts()
     context = {'form': form, 'password_help_texts': password_help_texts}
     return render(request, 'register.html', context)
-
+  
 
 def custom_login(request):
+    '''
+     Handle the GET request (displaying the form)
+    '''
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -264,6 +255,9 @@ def custom_login(request):
 
 
 def mock_user_metrics():
+    '''
+    Mock user metrics
+    '''
     # Mocking user metrics until API is fully implemented
     username = "John Doe"
     current_followers = 310
@@ -281,6 +275,9 @@ def mock_user_metrics():
 
 
 def mock_posts():
+    '''
+    Mock posts
+    '''
     posts = []
 
     for i in range(1, 6):
