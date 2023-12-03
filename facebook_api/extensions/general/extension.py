@@ -2,6 +2,9 @@
 extensions are used to add new functionality to the api wrapper without having to put it in the main codebase.
 '''
 
+from datetime import datetime, timedelta
+import json
+import requests
 from facebook_api.facebook_settings import facebook_Config
 from facebook_api.request_base import request_base
 from facebook_api.extensions.general.me import Me
@@ -11,6 +14,9 @@ from facebook_api.extensions.general.accounts import Accounts
 from facebook_api.extensions.general.businessAccounts import BusinessAccounts
 from facebook_api.extensions.general.media import Posts
 from facebook_api.extensions.general.basicProfileMetrics import BasicProfileMetrics
+from facebook_api.extensions.profile.profileFollows import ProfileFollows
+from facebook_api.extensions.profile.profileViews import ProfileViews
+
 
 
 class general:
@@ -45,50 +51,53 @@ class general:
         get the business accounts that the user has
         '''
         accounts = self.get_accounts()
-        try:
-            if (accounts.error):
-                return accounts
-        except:
-            return self.request.get(
-                self.request.facebook_config.api_version +
-                f'/{accounts.data[0].id}/?fields=instagram_business_account',
-                object_return_type=BusinessAccounts)
+
+        # Check if accounts is None
+        if accounts is None:
+            return None  # or raise an exception or handle accordingly
+
+        # Check for the presence of the 'error' attribute
+        if hasattr(accounts, 'error') and accounts.error:
+            return accounts
+        else:
+            account_id = accounts.data[0].id
+            endpoint = (
+                f'{self.request.facebook_config.api_version}/{account_id}/?fields=instagram_business_account'
+            )
+
+            return self.request.get(endpoint, object_return_type=BusinessAccounts)
+
 
     def get_posts(self):
         '''
         get the posts ids from the user
         TODO: adding abstraction to the posts so we can get the post data
-              this will pass a .set_client(self) to the posts so we can call
-              the posts.get_info() and it will return the info for that post
+            this will pass a .set_client(self) to the posts so we can call
+            the posts.get_info() and it will return the info for that post
         '''
         account = self.get_business_accounts()
-        if(type(account) == RequestError):
+        if isinstance(account, RequestError):
             return account
-        items: Posts = self.request.get(self.request.facebook_config.api_version +
-                            f'/{account.instagram_business_account.id}/media',
-                            object_return_type=Posts)
+
+        # Use the f-string for better readability
+        endpoint = f'{self.request.facebook_config.api_version}/{account.instagram_business_account.id}/media'
+
+
+        items = self.request.get(endpoint, object_return_type=Posts)
         return items
+
     
-    def get_post_data(self, id: int):
+    def get_post_data(self, post_id: int):
         '''
         get the posts information from the user
         Endpoint URL: 17989257334983575?fields=like_count,media_url,permalink,timestamp,caption,comments_count,media_type
-        {
-            "like_count": 2,
-            "media_url": "https://scontent-iad3-1.cdninstagram.com/o1/v/t16/f1/m82/0C4C916525DF02AE1742724BC26F39B2_video_dashinit.mp4?efg=eyJ2ZW5jb2RlX3RhZyI6InZ0c192b2RfdXJsZ2VuLmNsaXBzLnVua25vd24tQzMuNTc2LmRhc2hfYmFzZWxpbmVfMV92MSJ9&_nc_ht=scontent-iad3-1.cdninstagram.com&_nc_cat=104&vs=544928507820758_700565062&_nc_vs=HBksFQIYT2lnX3hwdl9yZWVsc19wZXJtYW5lbnRfcHJvZC8wQzRDOTE2NTI1REYwMkFFMTc0MjcyNEJDMjZGMzlCMl92aWRlb19kYXNoaW5pdC5tcDQVAALIAQAVAhg6cGFzc3Rocm91Z2hfZXZlcnN0b3JlL0dDYWN0QlFTZUFtRzJXNEdBS0NLOTJKbjRCMDRicV9FQUFBRhUCAsgBACgAGAAbAYgHdXNlX29pbAExFQAAJuTVgdnZxPFAFQIoAkMzLBdANarAgxJumBgSZGFzaF9iYXNlbGluZV8xX3YxEQB1AAA%3D&ccb=9-4&oh=00_AfBJBVE3P_sDc-_aDu1ZEjKQzeFS4rTb8p9niaanOBstFQ&oe=655EC4A3&_nc_sid=1d576d&_nc_rid=deb3ca28cb",
-            "permalink": "https://www.instagram.com/reel/CsPyT95AQKc/",
-            "timestamp": "2023-05-15T02:15:40+0000",
-            "caption": "Surrounding yourself with winners is the key to success 🏆 Follow along as we take inspiration from Kevin Hart and his winning mindset 🤩 Tune in to the Pivot Podcast and Thrive Minds for more motivational videos that will help you reach new heights 🚀 #kevinhart #pivotpodcast #thriveminds #motivationalvideo #fyp",
-            "comments_count": 0,
-            "media_type": "VIDEO",
-            "id": "17989257334983575"
-        }
         '''
+        endpoint = f'{self.request.facebook_config.api_version}/{post_id}?fields=like_count,media_url,permalink,timestamp,caption,comments_count,media_type'
 
-        data: PostInfo  = self.request.get(self.request.facebook_config.api_version +
-                            f'/{id}?fields=like_count,media_url,permalink,timestamp,caption,comments_count,media_type',
-                            object_return_type=PostInfo)
+        data = self.request.get(endpoint, object_return_type=PostInfo)
         return data
+
+
     
     def get_profile_metrics(self):
         '''
@@ -107,9 +116,117 @@ class general:
         }
         '''
         account = self.get_business_accounts()
+
+        # Check if account is None
+        if account is None:
+            return None  # or raise an exception or handle accordingly
+
+        # Check for the presence of the 'error' attribute
+        if hasattr(account, 'error') and account.error:
+            return account
+        else:
+            endpoint = f'{self.request.facebook_config.api_version}/{account.instagram_business_account.id}?fields=id,username,media_count,followers_count,follows_count,name,biography,profile_picture_url'
+
+            data = self.request.get(endpoint, object_return_type=BasicProfileMetrics)
+            return data
+
+
+    def calculate_date_range(self):
+        # Get the current date and time
+        current_datetime = datetime.now()
+
+        # Create a timedelta of 7 days
+        seven_days_delta = timedelta(days=7)
+
+        # Calculate the date for 7 days ago
+        seven_days_ago_datetime = current_datetime - seven_days_delta
+
+        # Format the dates as strings
+        current_datetime_string = current_datetime.strftime('%Y-%m-%d')
+        seven_days_ago_date_string = seven_days_ago_datetime.strftime('%Y-%m-%d')
+
+        return seven_days_ago_date_string, current_datetime_string
+
+    def get_profile_follows(self):
+        account = self.get_business_accounts()
+
+        # Check if account is None
+        if account is None:
+            return None  # or raise an exception or handle accordingly
+
+        # Check for the presence of the 'error' attribute
+        if hasattr(account, 'error') and account.error:
+            return account
+        else:
+            # Calculate the date range
+            start_date, end_date = self.calculate_date_range()
+
+            endpoint = (
+                f'{self.request.facebook_config.api_version}/'
+                f'{account.instagram_business_account.id}/insights/follower_count?'
+                f'since={start_date}&until={end_date}&period=day'
+            )
+
+            data = self.request.get(endpoint, object_return_type=ProfileFollows)
+            return data
+
+        
+
+    def get_profile_views(self):
+        account = self.get_business_accounts()
+
+        # Check if account is None
+        if account is None:
+            return None  # or raise an exception or handle accordingly
+
+        # Check for the presence of the 'error' attribute
+        if hasattr(account, 'error') and account.error:
+            return account
+        else:
+            # Calculate the date range
+            start_date, end_date = self.calculate_date_range()
+
+            endpoint = (
+                f'{self.request.facebook_config.api_version}/'
+                f'{account.instagram_business_account.id}/insights/profile_views?'
+                f'since={start_date}&until={end_date}&period=day'
+            )
+
+            data: ProfileViews = self.request.get(endpoint, object_return_type=ProfileViews)
+            return data
+        
+
+    def get_batch_post_data(self) -> 'list[PostInfo]':
+        posts = self.get_posts()
+        post_ids = [posts.data[i].id for i in range(len(posts.data))]
+
+        batch_request = [
+            {
+                'method': 'GET',
+                'relative_url': f'{post_id}?fields=like_count,media_url,permalink,timestamp,caption,comments_count,media_type'
+            } for post_id in post_ids
+        ]
+
+        params = {
+            'access_token': self.request.get_access_token(),
+            'batch': batch_request,
+        }
+
         try:
-            if (account.error):
-                return account
-        except:
-            return self.request.get(self.request.facebook_config.api_version +
-                                f'/{account.instagram_business_account.id}?fields=id,username,media_count,followers_count,follows_count,name,biography,profile_picture_url', object_return_type=BasicProfileMetrics)
+            response = requests.post('https://graph.facebook.com', json=params)
+            response.raise_for_status()  # Check for HTTP errors
+            data = response.json()
+
+            # Process the response
+            data = [json.loads(d['body']) for d in data if json.loads(d['body']).get('media_type') == 'IMAGE']
+
+            posts_data = [
+                PostInfo.from_dict({**post, 'timestamp': post.get('timestamp', '').split('T')[0]})
+                for post in data
+            ]
+
+            return posts_data
+
+        except requests.exceptions.RequestException as e:
+            # Handle the error (e.g., log it, return a default response, etc.)
+            return f"Error fetching batch post data: {str(e)}"

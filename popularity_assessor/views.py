@@ -5,20 +5,24 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
+
 from .models import InstagramAccount
 from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
 from facebook_api.extensions.error import RequestError
+from facebook_api.extensions.general.postInfo import PostInfo
 from facebook_api.helpers.get_accessToken import GetAccessToken
+from facebook_api.extensions.profile.profileViews import ProfileViews
+from facebook_api.extensions.profile.profileFollows import ProfileFollows
 from datetime import datetime, timedelta  # for mock data
 import random
 import os
 import json
-
+from django.http import JsonResponse
 
 def get_likes():
 
-    now = datetime.now()
+    now = datetime.now() - timedelta(days=1)
 
     dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
     dates.reverse()
@@ -29,7 +33,8 @@ def get_likes():
 
 def get_followers():
 
-    now = datetime.now()
+    # get yesterday's date
+    now = datetime.now() - timedelta(days=1)
 
     dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
     dates.reverse()
@@ -41,7 +46,10 @@ def get_followers():
 def connectInsta(request):
     code = request.GET.get('code')
     user_auth = GetAccessToken().user(code, request.get_host() + request.path)
+    if (type(user_auth) == RequestError):
+        print(user_auth.error.message)
 
+    print("TOKEN: " + user_auth.access_token)
     # create a new instagram account in the DB
     account = InstagramAccount(user=request.user, token=user_auth.access_token)
     account.save()
@@ -53,15 +61,18 @@ def connectInsta(request):
 def redirectToFacebookAuth(request):
     RANDOM_NUMBER = random.randrange(100000000, 999999999)
     client_id = os.getenv("FB_CLIENT_ID")
+    config_id = os.getenv("FB_CONFIG_ID")
     if client_id is None:
         raise ValueError("Facebook client id environment variable not set")
 
     url = request.build_absolute_uri(
         reverse('popularity_assessor:connect-insta'))
+    
+    print(url)
 
-    url = url.replace("http://", "https://")
+    # url = url.replace("http://", "http://")
 
-    fb_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id={client_id}&redirect_uri={url}&response_type=code&state={RANDOM_NUMBER}"
+    fb_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id={client_id}&config_id={config_id}&redirect_uri={url}&response_type=code&state={RANDOM_NUMBER}"
 
     return redirect(fb_auth_url)
 
@@ -154,25 +165,7 @@ def profile(request, user_name):
         ]) for post in posts)
 
     metrics = request.api.general.get_profile_metrics()
-    posts = request.api.general.get_posts()
-    posts_data = []
-    if (type(posts) != RequestError):
-
-        # get the first 10 posts if there is less than 10 posts just get all of them
-        if len(posts.data) < 5:
-            posts = posts.data
-        else:
-            posts = posts.data[0:5]
-
-        for post in posts:
-            postData = request.api.general.get_post_data(post.id)
-            if (type(postData) == RequestError
-                    or postData.media_type != "IMAGE"):
-                continue
-
-            # convert the time(2023-05-15T02:15:40+0000) into date only
-            postData.timestamp = postData.timestamp.split('T')[0]
-            posts_data.append(postData)
+    posts_data = request.api.general.get_batch_post_data()
 
     dates, likes = get_likes()
     _, followers = get_followers()
@@ -190,6 +183,18 @@ def profile(request, user_name):
             "week_followers": followers,
             "profile_metrics": metrics
         })
+
+
+@login_required
+@facebook_auth_check
+def timed_metrics(request):
+    data_views: ProfileViews = request.api.general.get_profile_views()
+
+    views = [data_views.data[0].values[i].value for i in range(len(data_views.data[0].values))]
+    data_follows: ProfileFollows = request.api.general.get_profile_follows()
+    follows = [data_follows.data[0].values[i].value for i in range(len(data_follows.data[0].values))]
+    return JsonResponse({"views": views, "follows": follows})
+
 
 
 def register(request):

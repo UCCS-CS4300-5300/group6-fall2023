@@ -1,16 +1,25 @@
-$(document).ready(function () {
+$(document).ready(async function () {
+
+    console.log('Profile.js is working');
+
+
     const ctx = document.getElementById('metricsChart');
 
+    // var data = await fetch('/popularity_assessor/timed_metrics/');
+    // console.log(data);
+
+    const resp = await fetch('/popularity_assessor/timed_metrics/')
+    const body = await resp.json()
     var dates = JSON.parse(document.getElementById('dates').textContent);
-    var likes = JSON.parse(document.getElementById('likes').textContent);
-    var followers = JSON.parse(document.getElementById('followers').textContent);
+    var views = body.views
+    var followers = body.followers
 
     const data = {
         labels: dates,
         datasets: [
             {
-                label: 'Likes',
-                data: likes,
+                label: 'Views',
+                data: views,
                 fill: true,
                 borderColor: 'rgb(75, 192, 192)',
                 backgroundColor: 'rgba(75, 192, 192, .4)',
