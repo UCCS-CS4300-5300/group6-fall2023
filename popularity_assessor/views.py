@@ -156,7 +156,7 @@ def connect_facebook(request):
 
 @login_required
 @facebook_auth_check
-def profile(request):
+def profile(request, user_name):
     '''
     displays user profile
     '''
@@ -171,7 +171,6 @@ def profile(request):
     user_metrics = mock_user_metrics()
     # posts = mock_posts()
 
-
     posts2 = get_posts()
     likes_today = 0
     for post in posts2:
@@ -180,7 +179,7 @@ def profile(request):
     metrics = request.api.general.get_profile_metrics()
     posts = request.api.general.get_posts()
     posts_data = []
-    if isinstance(posts) != RequestError:
+    if isinstance(posts, RequestError) == False:
 
         # get the first 10 posts if there is less than 10 posts just get all of them
         if len(posts.data) < 5:
@@ -190,12 +189,16 @@ def profile(request):
 
         for post in posts:
             post_data = request.api.general.get_post_data(post.id)
-            if (isinstance(post_data) == RequestError
+            if (isinstance(post_data, RequestError) == True
                     or post_data.media_type != "IMAGE"):
                 continue
 
             # convert the time(2023-05-15T02:15:40+0000) into date only
             post_data.timestamp = post_data.timestamp.split('T')[0]
+
+            # Split caption into space-delimited list
+            post_data.caption = post_data.caption.split()
+
             posts_data.append(post_data)
 
     dates, likes = get_likes()
@@ -236,7 +239,7 @@ def register(request):
     password_help_texts = get_password_validators_help_texts()
     context = {'form': form, 'password_help_texts': password_help_texts}
     return render(request, 'register.html', context)
-  
+
 
 def custom_login(request):
     '''
