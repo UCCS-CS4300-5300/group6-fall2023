@@ -32,12 +32,12 @@ class facebook_API(request_base):
         self.general = general(self)
 
 
-    def set_token(self, newToken:str):
+    def set_token(self, new_token : str):
         '''
         Replace the current token with a new one
         '''
         # set our token
-        self.token              = newToken
+        self.token              = new_token
         self.required_params    = {'access_token': self.token}
         
 

@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 from typing import List, Any
 from dataclasses import dataclass
 

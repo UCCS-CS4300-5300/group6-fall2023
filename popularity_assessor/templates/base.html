@@ -28,9 +28,12 @@
     <link id="dark-mode-style" href="{% static 'css/dark_mode.css' %}" rel="stylesheet" disabled>
 </head>
 <body>
-    {% if user.is_authenticated %}
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid px-5">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" style="background-color: gray; border: none;" id="dark-mode-toggle">
+          <label class="form-check-label text-white" for="dark-mode-toggle" id="dark-mode-label">Dark Mode</label>
+        </div>
           <!-- Navbar brand/logo could go here if you have one -->
 
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,23 +44,16 @@
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                   <!-- Other nav items here -->
               </ul>
-
               <ul class="navbar-nav">
-
+                {% if user.is_authenticated %}
                   <li class="nav-item">
                       <a class="nav-link" href="{% url 'popularity_assessor:logout' %}">Logout</a>
                   </li>
-
+                {% endif %}
               </ul>
-
-              <!-- Dark mode toggle button, styled distinctly from the nav links -->
-              <button id="dark-mode-toggle" class="btn btn-sm btn-light ms-3" aria-label="Toggle dark mode">
-                  <i class="bi bi-moon-stars-fill"></i> Dark Mode
-              </button>
           </div>
       </div>
   </nav>
-  {% endif %}
     {% block content %}{% endblock %}
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -68,6 +64,7 @@
                 isDarkMode = !isDarkMode;
                 darkModeCSS.disabled = !isDarkMode;
                 localStorage.setItem('darkMode', isDarkMode);
+                $('#dark-mode-label').text(!isDarkMode ? 'Light Mode': 'Dark Mode');
             });
         });
     </script>

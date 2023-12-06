@@ -20,8 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = "5982375982598723"
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = "5982375982598723"
+#SECRET_KEY = os.getenv('SECRET_KEY')
 if SECRET_KEY is None:
     print(
         "Please setup a SECRET_KEY in the Secrets (Environment variables) tab. See README.md for more."
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # 'popularity_assessor.middleware.ProfilingMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
