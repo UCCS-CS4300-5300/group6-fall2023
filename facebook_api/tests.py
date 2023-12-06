@@ -79,6 +79,17 @@ class FacebookAPITest(TestCase):
                 }
             }
         })
+    
+    def mock_business_accounts(self):
+        '''
+        mock the get business accounts method
+        '''
+        return BusinessAccounts.from_dict({
+            "instagram_business_account": {
+                "id": "123"
+            },
+            "id": "123"
+        })
 
     def mock_get_posts(self):
         '''
@@ -102,6 +113,33 @@ class FacebookAPITest(TestCase):
                 }
             }
         })
+    
+    # def mock_get_profile_metrics(self):
+    #     '''
+    #     mock the get profile metrics method
+    #     '''
+    #     return BasicProfileMetrics.from_dict({
+    #         "id": "123",
+    #         "username": "test",
+    #         "media_count": 10,
+    #         "followers_count": 100,
+    #         "follows_count": 50,
+    #         "name": "test",
+    #         "biography": "test",
+    #         "profile_picture_url": "https://example.com"
+    #     })
+    
+    # def test_get_profile_metrics(self):
+    #     '''
+    #     test for getting profile metrics
+    #     '''
+    #     self.facebook_api.general.get_business_accounts = self.mock_business_accounts
+    #     self.facebook_api.general.get = self.mock_get_profile_metrics
+    #     resp = self.facebook_api.general.get_profile_metrics()
+
+    #     self.assertIsInstance(resp, BasicProfileMetrics)
+    #     self.assertEqual(resp.id, "123")
+
 
     def test_get_posts(self):
         '''
