@@ -24,18 +24,24 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from facebook_api.extensions.error import RequestError
-from facebook_api.helpers.get_accessToken import GetAccessToken
+
 from .models import InstagramAccount
 from .helpers import get_password_validators_help_texts
 from .decorators import facebook_auth_check
-
+from facebook_api.extensions.error import RequestError
+from facebook_api.extensions.general.postInfo import PostInfo
+from facebook_api.helpers.get_accessToken import GetAccessToken
+from facebook_api.extensions.profile.profileViews import ProfileViews
+from facebook_api.extensions.profile.profileFollows import ProfileFollows
+from datetime import datetime, timedelta  # for mock data
+import json
+from django.http import JsonResponse
 
 def get_likes():
     '''
     Mock likes from Instagram for last seven days
     '''
-    now = datetime.now()
+    now = datetime.now() - timedelta(days=1)
 
     dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
     dates.reverse()
@@ -48,7 +54,9 @@ def get_followers():
     '''
     Mock followers from Instagram for last seven days
     '''
-    now = datetime.now()
+    # get yesterday's date
+    now = datetime.now() - timedelta(days=1)
+
 
     dates = [(now - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(7)]
     dates.reverse()
@@ -63,7 +71,10 @@ def connect_insta(request):
     '''
     code = request.GET.get('code')
     user_auth = GetAccessToken().user(code, request.get_host() + request.path)
+    if (type(user_auth) == RequestError):
+        print(user_auth.error.message)
 
+    print("TOKEN: " + user_auth.access_token)
     # create a new instagram account in the DB
     account = InstagramAccount(user=request.user, token=user_auth.access_token)
     account.save()
@@ -78,13 +89,17 @@ def redirect_to_facebook_auth(request):
     '''
     rand_state = random.randrange(100000000, 999999999)
     client_id = os.getenv("FB_CLIENT_ID")
+    config_id = os.getenv("FB_CONFIG_ID")
     if client_id is None:
         raise ValueError("Facebook client id environment variable not set")
 
     url = request.build_absolute_uri(
         reverse('popularity_assessor:connect-insta'))
+    
+    print(url)
 
-    url = url.replace("http://", "https://")
+    # url = url.replace("http://", "http://")
+
 
     fb_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id=\
     {client_id}&redirect_uri={url}&response_type=code&state={rand_state}"
@@ -171,38 +186,38 @@ def profile(request, user_name):
     user_metrics = mock_user_metrics()
     # posts = mock_posts()
 
-    posts2 = get_posts()
-    likes_today = 0
-    for post in posts2:
-        likes_today += post['like_count']
 
-    metrics = request.api.general.get_profile_metrics()
-    posts = request.api.general.get_posts()
+    # Calculate likes from today and yesterday
+   
     posts_data = []
-    if isinstance(posts, RequestError) == False:
+    likes_today = 0
+    likes_yesterday = 0
+    metrics = None
 
-        # get the first 10 posts if there is less than 10 posts just get all of them
-        if len(posts.data) < 5:
-            posts = posts.data
-        else:
-            posts = posts.data[0:5]
+    posts2 = get_posts(None)
+    try:
 
-        for post in posts:
-            post_data = request.api.general.get_post_data(post.id)
-            if (isinstance(post_data, RequestError) == True
-                    or post_data.media_type != "IMAGE"):
-                continue
+        likes_today = 0
+        for post in posts2:
+            likes_today += post['like_count']
 
-            # convert the time(2023-05-15T02:15:40+0000) into date only
-            post_data.timestamp = post_data.timestamp.split('T')[0]
 
-            # Split caption into space-delimited list
-            post_data.caption = post_data.caption.split()
+        likes_yesterday = sum(
+            len([
+                like for like in post['like_count']
+                if like['timestamp'].startswith(yesterday_str)
+            ]) for post in posts)
 
-            posts_data.append(post_data)
+        metrics = request.api.general.get_profile_metrics()
+        posts_data = request.api.general.get_batch_post_data()
+    except:
+        pass
+
 
     dates, likes = get_likes()
     _, followers = get_followers()
+
+
 
     # Pass data to the template
     return render(
@@ -215,6 +230,18 @@ def profile(request, user_name):
             "week_followers": followers,
             "profile_metrics": metrics
         })
+
+
+@login_required
+@facebook_auth_check
+def timed_metrics(request):
+    data_views: ProfileViews = request.api.general.get_profile_views()
+
+    views = [data_views.data[0].values[i].value for i in range(len(data_views.data[0].values))]
+    data_follows: ProfileFollows = request.api.general.get_profile_follows()
+    follows = [data_follows.data[0].values[i].value for i in range(len(data_follows.data[0].values))]
+    return JsonResponse({"views": views, "follows": follows})
+
 
 
 def register(request):

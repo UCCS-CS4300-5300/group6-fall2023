@@ -3,11 +3,11 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from facebook_api.facebook import facebook_API
 from facebook_api.facebook import facebook_Config
+from facebook_api.extensions.error import RequestError
 
 from .models import InstagramAccount
 from functools import wraps
 from facebook_api.helpers.get_accessToken import GetAccessToken
-
 
 def facebook_auth_check(view_func):
     @wraps(view_func)
@@ -18,16 +18,21 @@ def facebook_auth_check(view_func):
             # Check if the user's account is connected with an Instagram account
             IGAcc = InstagramAccount.objects.get(pk=user.id)
 
-            getAccessToken = GetAccessToken()
+            # getAccessToken = GetAccessToken()
 
             # TODO: Implement access code expiration check
-            adminAccessToken = getAccessToken.admin().access_token
+            # if(type(getAccessToken.admin()) == RequestError):
+            #     return redirect("popularity_assessor:connect-facebook")
             
-            validity = getAccessToken.debug(IGAcc.token, adminAccessToken)
 
-            if validity != 'valid':
-                request.message = "Looks like your Facebook access token has expired. Please reconnect your account."
-                redirect("popularity_assessor:connect-facebook")
+            # adminAccessToken = getAccessToken.admin().access_token
+            
+            # validity = getAccessToken.debug(IGAcc.token, adminAccessToken)
+
+            # if validity != 'valid':
+            #     request.message = "Looks like your Facebook access token has expired. Please reconnect your account."
+            #     redirect("popularity_assessor:connect-facebook")
+
 
             request.api = facebook_API(IGAcc.token, facebook_Config())
         except InstagramAccount.DoesNotExist:

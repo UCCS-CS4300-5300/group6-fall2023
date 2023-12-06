@@ -1,16 +1,15 @@
-$(document).ready(function () {
+$(document).ready(async function () {
+    console.log('Profile.js is working');
+
     const ctx = document.getElementById('metricsChart');
 
-    var dates = JSON.parse(document.getElementById('dates').textContent);
-    var likes = JSON.parse(document.getElementById('likes').textContent);
-    var followers = JSON.parse(document.getElementById('followers').textContent);
-
-    const data = {
-        labels: dates,
+    // Initial empty or placeholder data
+    const initialData = {
+        labels: [],
         datasets: [
             {
-                label: 'Likes',
-                data: likes,
+                label: 'Views',
+                data: [],
                 fill: true,
                 borderColor: 'rgb(75, 192, 192)',
                 backgroundColor: 'rgba(75, 192, 192, .4)',
@@ -18,7 +17,7 @@ $(document).ready(function () {
             },
             {
                 label: 'Followers',
-                data: followers,
+                data: [],
                 fill: true,
                 borderColor: 'rgb(233, 30, 99)',
                 backgroundColor: 'rgba(233, 30, 99, .4)',
@@ -29,28 +28,54 @@ $(document).ready(function () {
 
     const config = {
         type: 'line',
-        data: data,
-      options: { 
-        plugins: {
-            title: {
-                display: true,
-                text: 'Weekly Gain/Loss',
-                font: {
-                  size: 30,
-                  style: 'italic'
+        data: initialData,
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Weekly Gain/Loss',
+                    font: {
+                        size: 30,
+                        style: 'italic'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
                 }
             }
-        }, 
-          scales: {
-              x: {
-                  ticks: {
-                      maxRotation: 45,
-                      minRotation: 45
-                  }
-              }
-          }
-      }
+        }
     };
 
-    new Chart(ctx, config);
+    // Create a chart instance with the initial data
+    const chart = new Chart(ctx, config);
+
+    async function fetchDataAndRenderChart() {
+        const resp = await fetch('/popularity_assessor/timed_metrics/');
+        const body = await resp.json();
+        const dates = JSON.parse(document.getElementById('dates').textContent);
+        const views = body.views;
+        const followers = body.follows;
+
+        // Update the chart with actual data
+        chart.data.labels = dates;
+        chart.data.datasets[0].data = views;
+        chart.data.datasets[1].data = followers;
+
+        // Update the chart options if needed
+        // chart.options = updatedOptions;
+
+        // Update the chart
+        chart.update();
+    }
+
+    // Call the function to fetch data and render the chart
+    await fetchDataAndRenderChart();
+
+    // You can also set an interval to periodically update the data and refresh the chart
+    // setInterval(fetchDataAndRenderChart, 60000); // Update every minute, for example
 });
