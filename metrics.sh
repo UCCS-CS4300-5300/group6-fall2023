@@ -1,6 +1,6 @@
-sprint_num=3
+sprint_num=4
 python -m pylint popularity_assessor > sprint${sprint_num}_pylint.txt
-python -m coverage run manage.py test 
+python -m coverage run manage.py test
 python -m coverage report > sprint${sprint_num}_coverage.txt
 python -m radon cc popularity_assessor > sprint${sprint_num}_cc.txt
 python -m radon cc -a -s popularity_assessor > sprint${sprint_num}_abc.txt

@@ -17,7 +17,6 @@ from facebook_api.extensions.profile.profileFollows import ProfileFollows
 from facebook_api.extensions.profile.profileViews import ProfileViews
 
 
-
 class general:
     '''
     general extension for the facebook api wrapper
@@ -64,8 +63,8 @@ class general:
                 f'{self.request.facebook_config.api_version}/{account_id}/?fields=instagram_business_account'
             )
 
-            return self.request.get(endpoint, object_return_type=BusinessAccounts)
-
+            return self.request.get(endpoint,
+                                    object_return_type=BusinessAccounts)
 
     def get_posts(self):
         '''
@@ -81,11 +80,9 @@ class general:
         # Use the f-string for better readability
         endpoint = f'{self.request.facebook_config.api_version}/{account.instagram_business_account.id}/media'
 
-
         items = self.request.get(endpoint, object_return_type=Posts)
         return items
 
-    
     def get_post_data(self, post_id: int):
         '''
         get the posts information from the user
@@ -96,8 +93,6 @@ class general:
         data = self.request.get(endpoint, object_return_type=PostInfo)
         return data
 
-
-    
     def get_profile_metrics(self):
         '''
         Gets basic metrics for now
@@ -126,9 +121,9 @@ class general:
         else:
             endpoint = f'{self.request.facebook_config.api_version}/{account.instagram_business_account.id}?fields=id,username,media_count,followers_count,follows_count,name,biography,profile_picture_url'
 
-            data = self.request.get(endpoint, object_return_type=BasicProfileMetrics)
+            data = self.request.get(endpoint,
+                                    object_return_type=BasicProfileMetrics)
             return data
-
 
     def calculate_date_range(self):
         # Get the current date and time
@@ -142,7 +137,8 @@ class general:
 
         # Format the dates as strings
         current_datetime_string = current_datetime.strftime('%Y-%m-%d')
-        seven_days_ago_date_string = seven_days_ago_datetime.strftime('%Y-%m-%d')
+        seven_days_ago_date_string = seven_days_ago_datetime.strftime(
+            '%Y-%m-%d')
 
         return seven_days_ago_date_string, current_datetime_string
 
@@ -163,13 +159,11 @@ class general:
             endpoint = (
                 f'{self.request.facebook_config.api_version}/'
                 f'{account.instagram_business_account.id}/insights/follower_count?'
-                f'since={start_date}&until={end_date}&period=day'
-            )
+                f'since={start_date}&until={end_date}&period=day')
 
-            data = self.request.get(endpoint, object_return_type=ProfileFollows)
+            data = self.request.get(endpoint,
+                                    object_return_type=ProfileFollows)
             return data
-
-        
 
     def get_profile_views(self):
         account = self.get_business_accounts()
@@ -188,23 +182,22 @@ class general:
             endpoint = (
                 f'{self.request.facebook_config.api_version}/'
                 f'{account.instagram_business_account.id}/insights/profile_views?'
-                f'since={start_date}&until={end_date}&period=day'
-            )
+                f'since={start_date}&until={end_date}&period=day')
 
-            data: ProfileViews = self.request.get(endpoint, object_return_type=ProfileViews)
+            data: ProfileViews = self.request.get(
+                endpoint, object_return_type=ProfileViews)
             return data
-        
 
     def get_batch_post_data(self) -> 'list[PostInfo]':
         posts = self.get_posts()
         post_ids = [posts.data[i].id for i in range(len(posts.data))]
 
-        batch_request = [
-            {
-                'method': 'GET',
-                'relative_url': f'{post_id}?fields=like_count,media_url,permalink,timestamp,caption,comments_count,media_type'
-            } for post_id in post_ids
-        ]
+        batch_request = [{
+            'method':
+            'GET',
+            'relative_url':
+            f'{post_id}?fields=like_count,media_url,permalink,timestamp,caption,comments_count,media_type'
+        } for post_id in post_ids]
 
         params = {
             'access_token': self.request.get_access_token(),
@@ -217,12 +210,20 @@ class general:
             data = response.json()
 
             # Process the response
-            data = [json.loads(d['body']) for d in data if json.loads(d['body']).get('media_type') == 'IMAGE']
+            data = [
+                json.loads(d['body']) for d in data
+                if json.loads(d['body']).get('media_type') == 'IMAGE'
+            ]
 
             posts_data = [
-                PostInfo.from_dict({**post, 'timestamp': post.get('timestamp', '').split('T')[0]})
-                for post in data
+                PostInfo.from_dict({
+                    **post, 'timestamp':
+                    post.get('timestamp', '').split('T')[0]
+                }) for post in data
             ]
+
+            for post in posts_data:
+                post.caption = post.caption.split()
 
             return posts_data
 

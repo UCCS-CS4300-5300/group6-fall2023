@@ -46,6 +46,12 @@ $(document).ready(async function () {
                         maxRotation: 45,
                         minRotation: 45
                     }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
                 }
             }
         }
@@ -65,7 +71,8 @@ $(document).ready(async function () {
         chart.data.labels = dates;
         chart.data.datasets[0].data = views;
         chart.data.datasets[1].data = followers;
-
+        console.log(views);
+        console.log(followers);
         // Update the chart options if needed
         // chart.options = updatedOptions;
 
@@ -75,7 +82,4 @@ $(document).ready(async function () {
 
     // Call the function to fetch data and render the chart
     await fetchDataAndRenderChart();
-
-    // You can also set an interval to periodically update the data and refresh the chart
-    // setInterval(fetchDataAndRenderChart, 60000); // Update every minute, for example
 });

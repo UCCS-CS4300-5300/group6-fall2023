@@ -1,5 +1,5 @@
-from ..extensions.authentication.userAuth import UserAuth   
-from ..extensions.error import RequestError                     
+from ..extensions.authentication.userAuth import UserAuth
+from ..extensions.error import RequestError
 from ..extensions.authentication.extendToken import ExtendToken
 import requests
 import os
@@ -18,7 +18,7 @@ class GetAccessToken:
         params = {
             "code": code,
             "client_id": self.client_id,
-            "redirect_uri": "http://" + redirect_url,
+            "redirect_uri": "https://" + redirect_url,
             "client_secret": self.client_secret
         }
         resp = requests.get(url, params=params)
@@ -88,17 +88,17 @@ class GetAccessToken:
                     return 'invalid'  # Token is invalid for other reasons
 
         return 'valid'
-    
-    def extend_token(self, user_access_token: str, app_id: str, app_secret: str):
+
+    def extend_token(self, user_access_token: str, app_id: str,
+                     app_secret: str):
         url = f"https://graph.facebook.com/v18.0/oauth/access_token?grant_type=fb_exchange_token&client_id={app_id}&client_secret={app_secret}&fb_exchange_token={user_access_token}"
         resp = requests.get(url)
 
         # if we have an error, return the error
         if resp.status_code >= 400 or resp.json().get('error') != None:
             return RequestError.from_dict(resp.json())
-        
+
         # if we have an object return type, we want to return the object
         if ExtendToken != None:
             resp = ExtendToken.from_dict(resp.json())
             return resp
-        

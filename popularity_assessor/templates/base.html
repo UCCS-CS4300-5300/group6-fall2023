@@ -31,8 +31,8 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid px-5">
         <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="dark-mode-toggle">
-          <label class="form-check-label" for="dark-mode-toggle">Dark Mode</label>
+          <input class="form-check-input" type="checkbox" style="background-color: gray; border: none;" id="dark-mode-toggle">
+          <label class="form-check-label text-white" for="dark-mode-toggle" id="dark-mode-label">Dark Mode</label>
         </div>
           <!-- Navbar brand/logo could go here if you have one -->
 
@@ -51,13 +51,6 @@
                   </li>
                 {% endif %}
               </ul>
-
-              <!-- Dark mode toggle button, styled distinctly from the nav links -->
-            <!--
-              <button id="dark-mode-toggle" class="btn btn-sm btn-light ms-3" aria-label="Toggle dark mode">
-                  <i class="bi bi-moon-stars-fill"></i> Dark Mode
-              </button>
-            -->
           </div>
       </div>
   </nav>
@@ -71,6 +64,7 @@
                 isDarkMode = !isDarkMode;
                 darkModeCSS.disabled = !isDarkMode;
                 localStorage.setItem('darkMode', isDarkMode);
+                $('#dark-mode-label').text(!isDarkMode ? 'Light Mode': 'Dark Mode');
             });
         });
     </script>
