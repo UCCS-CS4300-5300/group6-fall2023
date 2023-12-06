@@ -1,11 +1,14 @@
-from ..extensions.authentication.userAuth import UserAuth
-from ..extensions.error import RequestError
+from ..extensions.authentication.userAuth import UserAuth   
+from ..extensions.error import RequestError                     
 from ..extensions.authentication.extendToken import ExtendToken
 import requests
 import os
 
 
 class GetAccessToken:
+    '''
+    get access token class to that is helpers for the facebook api
+    '''
     def __init__(self):
         self.client_id = os.getenv("FB_CLIENT_ID")
         self.client_secret = os.getenv("FB_CLIENT_SECRET")

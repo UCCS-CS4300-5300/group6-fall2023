@@ -5,7 +5,6 @@ extensions are used to add new functionality to the api wrapper without having t
 from datetime import datetime, timedelta
 import json
 import requests
-from facebook_api.facebook_settings import facebook_Config
 from facebook_api.request_base import request_base
 from facebook_api.extensions.general.me import Me
 from facebook_api.extensions.general.postInfo import PostInfo

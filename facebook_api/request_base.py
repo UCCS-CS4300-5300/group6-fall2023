@@ -20,14 +20,19 @@ class request_base:
         return self.required_params.get('access_token')
 
 
-    def get(self, endpoint: str, params: dict = {}, object_return_type: object = None, no_token: bool = False):
+    def get(self, endpoint: str, params: dict = {},
+            object_return_type: object = None, no_token: bool = False):
         '''
         our get request method to help handle the requests
         this will send a get request to the url with the params added on the end
 
         endpoint: str - the endpoint to send the request to
-        params: dict = {} - the params to add to the end of the url (eg. ?param1=value1&param2=value2)
-        object_return_type: object = None - if we want to return an object instead of a dict, we can specify the object type here
+
+        params: dict = {} - the params to add to the end 
+        of the url (eg. ?param1=value1&param2=value2)
+        
+        object_return_type: object = None - if we want to return 
+        an object instead of a dict, we can specify the object type here
 
         returns: object | dict | RequestError - the response from the request
         object if we have an object_return_type
