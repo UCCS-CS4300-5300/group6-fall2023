@@ -153,22 +153,34 @@ def profile(request, user_name):
         ]) for post in posts)
 
     '''
-    posts2 = get_posts(None)
+    posts_data = []
     likes_today = 0
-    for post in posts2:
-        likes_today += post['like_count']
+    likes_yesterday = 0
+    metrics = None
 
-    likes_yesterday = sum(
-        len([
-            like for like in post['like_count']
-            if like['timestamp'].startswith(yesterday_str)
-        ]) for post in posts)
+    posts2 = get_posts(None)
+    try:
 
-    metrics = request.api.general.get_profile_metrics()
-    posts_data = request.api.general.get_batch_post_data()
+        likes_today = 0
+        for post in posts2:
+            likes_today += post['like_count']
+
+        likes_yesterday = sum(
+            len([
+                like for like in post['like_count']
+                if like['timestamp'].startswith(yesterday_str)
+            ]) for post in posts)
+
+        metrics = request.api.general.get_profile_metrics()
+        posts_data = request.api.general.get_batch_post_data()
+    except:
+        pass
+
 
     dates, likes = get_likes()
     _, followers = get_followers()
+
+
 
     # Pass data to the template
     return render(

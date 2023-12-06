@@ -5,6 +5,11 @@ from facebook_api.extensions.general.me import Me
 from facebook_api.extensions.general.businessAccounts import BusinessAccounts, InstagramBusinessAccount
 from facebook_api.extensions.general.accounts import Accounts, CategoryList, Datum as DatumAccount, Paging
 from facebook_api.extensions.general.media import Posts, Datum, Paging, Cursors
+from facebook_api.extensions.authentication.extendToken import ExtendToken
+from facebook_api.extensions.authentication.userAuth import UserAuth
+from facebook_api.extensions.general.basicProfileMetrics import BasicProfileMetrics
+from facebook_api.extensions.general.postInfo import PostInfo
+
 # TODO add barrel export to make this easier and cleaner
 
 from facebook_api.facebook_settings import facebook_Config
@@ -22,10 +27,6 @@ class facebook_APITest(TestCase):
         self.assertEqual(self.facebook_api.token, token)
         self.assertEqual(self.facebook_api.required_params,
                          {'access_token': token})
-
-    def test_get_posts(self):
-        resp = self.facebook_api.general.get_posts()
-        self.assertIsInstance(resp, RequestError)
 
     def mock_get_me(self, endpoint, object_return_type):
         return Me.from_dict({"name": "test", "id": "test"})
@@ -59,6 +60,32 @@ class facebook_APITest(TestCase):
                 }
             }
         })
+    
+    def mock_get_posts(self):
+        return Posts.from_dict({
+            "data": [{
+                "id": "123",
+                "caption": "test",
+                "media_type": "image",
+                "media_url": "https://example.com",
+                "permalink": "https://example.com",
+                "timestamp": "2023-01-01T12:00:00",
+                "like_count": 10,
+                "comments_count": 5
+            }],
+            "paging": {
+                "cursors": {
+                    "before": "123",
+                    "after": "456"
+                }
+            }
+        })
+    
+    def test_get_posts(self):
+        self.facebook_api.general.get_posts = self.mock_get_posts
+        resp = self.facebook_api.general.get_posts()
+        self.assertIsInstance(resp, Posts)
+        self.assertEqual(resp.data[0].id, "123")
 
     def test_get_me(self):
         self.facebook_api.get = self.mock_get_me
@@ -72,7 +99,7 @@ class facebook_APITest(TestCase):
         self.assertEqual(resp.data[0].access_token, "1234")
 
     def test_fail_request_oauth(self):
-        resp = self.facebook_api.get("test")
+        resp = self.facebook_api.get("test", object_return_type=RequestError)
         self.assertIsInstance(resp, RequestError)
         self.assertEqual(resp.error.type, "OAuthException")
 
@@ -285,3 +312,146 @@ class Account_AccountsTestCase(TestCase):
         self.assertEqual(accounts.paging.cursors.after, "456")
 
 
+class ExtendTokenTestCase(TestCase):
+    def test_create_extend_token(self):
+        access_token = "example_access_token"
+        token_type = "example_token_type"
+        expires_in = 3600
+
+        extend_token = ExtendToken(access_token, token_type, expires_in)
+
+        self.assertEqual(extend_token.access_token, access_token)
+        self.assertEqual(extend_token.token_type, token_type)
+        self.assertEqual(extend_token.expires_in, expires_in)
+
+    def test_from_dict_method(self):
+        data = {
+            "access_token": "example_access_token",
+            "token_type": "example_token_type",
+            "expires_in": 3600,
+        }
+
+        extend_token = ExtendToken.from_dict(data)
+
+        self.assertEqual(extend_token.access_token, data["access_token"])
+        self.assertEqual(extend_token.token_type, data["token_type"])
+        self.assertEqual(extend_token.expires_in, data["expires_in"])
+
+
+
+class UserAuthTestCase(TestCase):
+    def test_create_user_auth(self):
+        access_token = "example_access_token"
+        token_type = "example_token_type"
+
+        user_auth = UserAuth(access_token, token_type)
+
+        self.assertEqual(user_auth.access_token, access_token)
+        self.assertEqual(user_auth.token_type, token_type)
+
+    def test_from_dict_method(self):
+        data = {
+            "access_token": "example_access_token",
+            "token_type": "example_token_type",
+        }
+
+        user_auth = UserAuth.from_dict(data)
+
+        self.assertEqual(user_auth.access_token, data["access_token"])
+        self.assertEqual(user_auth.token_type, data["token_type"])
+
+
+class BasicProfileMetricsTestCase(TestCase):
+    def test_create_basic_profile_metrics(self):
+        data = {
+            "id": "example_id",
+            "username": "example_username",
+            "media_count": 10,
+            "followers_count": 100,
+            "follows_count": 50,
+            "name": "example_name",
+            "biography": "example_biography",
+            "profile_picture_url": "example_profile_picture_url",
+        }
+
+        profile_metrics = BasicProfileMetrics(**data)
+
+        self.assertEqual(profile_metrics.id, data["id"])
+        self.assertEqual(profile_metrics.username, data["username"])
+        self.assertEqual(profile_metrics.media_count, data["media_count"])
+        self.assertEqual(profile_metrics.followers_count, data["followers_count"])
+        self.assertEqual(profile_metrics.follows_count, data["follows_count"])
+        self.assertEqual(profile_metrics.name, data["name"])
+        self.assertEqual(profile_metrics.biography, data["biography"])
+        self.assertEqual(profile_metrics.profile_picture_url, data["profile_picture_url"])
+
+    def test_from_dict_method(self):
+        data = {
+            "id": "example_id",
+            "username": "example_username",
+            "media_count": 10,
+            "followers_count": 100,
+            "follows_count": 50,
+            "name": "example_name",
+            "biography": "example_biography",
+            "profile_picture_url": "example_profile_picture_url",
+        }
+
+        profile_metrics = BasicProfileMetrics.from_dict(data)
+
+        self.assertEqual(profile_metrics.id, data["id"])
+        self.assertEqual(profile_metrics.username, data["username"])
+        self.assertEqual(profile_metrics.media_count, data["media_count"])
+        self.assertEqual(profile_metrics.followers_count, data["followers_count"])
+        self.assertEqual(profile_metrics.follows_count, data["follows_count"])
+        self.assertEqual(profile_metrics.name, data["name"])
+        self.assertEqual(profile_metrics.biography, data["biography"])
+        self.assertEqual(profile_metrics.profile_picture_url, data["profile_picture_url"])
+
+
+class PostInfoTestCase(TestCase):
+    def test_create_post_info(self):
+        data = {
+            "like_count": 50,
+            "media_url": "example_media_url",
+            "permalink": "example_permalink",
+            "timestamp": "2023-01-01T12:00:00",
+            "caption": "example_caption",
+            "comments_count": 10,
+            "media_type": "image",
+            "id": "example_id",
+        }
+
+        post_info = PostInfo(**data)
+
+        self.assertEqual(post_info.like_count, data["like_count"])
+        self.assertEqual(post_info.media_url, data["media_url"])
+        self.assertEqual(post_info.permalink, data["permalink"])
+        self.assertEqual(post_info.timestamp, data["timestamp"])
+        self.assertEqual(post_info.caption, data["caption"])
+        self.assertEqual(post_info.comments_count, data["comments_count"])
+        self.assertEqual(post_info.media_type, data["media_type"])
+        self.assertEqual(post_info.id, data["id"])
+
+    def test_from_dict_method(self):
+        data = {
+            "like_count": 50,
+            "media_url": "example_media_url",
+            "permalink": "example_permalink",
+            "timestamp": "2023-01-01T12:00:00",
+            "caption": "example_caption",
+            "comments_count": 10,
+            "media_type": "image",
+            "id": "example_id",
+        }
+
+        post_info = PostInfo.from_dict(data)
+
+        self.assertEqual(post_info.like_count, data["like_count"])
+        self.assertEqual(post_info.media_url, data["media_url"])
+        self.assertEqual(post_info.permalink, data["permalink"])
+        self.assertEqual(post_info.timestamp, data["timestamp"])
+        self.assertEqual(post_info.caption, data["caption"])
+        self.assertEqual(post_info.comments_count, data["comments_count"])
+        self.assertEqual(post_info.media_type, data["media_type"])
+        self.assertEqual(post_info.id, data["id"])

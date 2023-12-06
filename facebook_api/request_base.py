@@ -42,7 +42,7 @@ class request_base:
         resp = requests.get(url, params=params_to_send)
 
         # raise an HTTPError for bad responses
-        resp.raise_for_status()
+        # resp.raise_for_status()
 
         # if we have an object return type, we want to return the object
         # this will make it easier to use the API since we can get an
